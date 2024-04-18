@@ -19,33 +19,19 @@ import glob
 
 from math import sqrt
 
-from datasets.ucf.load_data import UCF_dataset, UCF_collate_fn
-
+from datasets.build_dataset import build_dataset
 from utils.box import draw_bounding_box
 from utils.box import non_max_suppression
-from datasets.ucf.transforms import UCF_transform, Augmentation
 from model.TSN.YOLO2Stream import build_yolo2stream
 from utils.build_config import build_config
 
 def detect(config):
 
     #########################################################################
-    root_path     = config['data_root']
-    split_path    = "testlist.txt"
-    data_path     = "rgb-images"
-    ann_path      = "labels"
-    clip_length   = config['clip_length']
-    sampling_rate = config['sampling_rate']
-    num_classes   = config['num_classes']
-    mapping       = config['idx2name']
-
-
-    dataset = UCF_dataset(root_path, split_path, data_path, ann_path
-                          , clip_length, sampling_rate, transform=UCF_transform())
-
-    model  = build_yolo2stream(config) 
+    dataset = build_dataset(config, phase='test')
+    model   = build_yolo2stream(config) 
     ##########################################################################
-
+    mapping = config['idx2name']
     model.to("cuda")
     model.eval()
 

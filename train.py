@@ -21,9 +21,11 @@ from utils.gradflow_check import plot_grad_flow
 from utils.EMA import EMA
 import logging
 from utils.build_config import build_config
-from datasets.ucf.load_data import UCF_dataset, UCF_collate_fn
+from datasets.ucf.load_data import UCF_dataset
+from datasets.collate_fn import collate_fn
+from datasets.build_dataset import build_dataset
 from model.TSN.YOLO2Stream import build_yolo2stream
-from utils.loss import ComputeLoss
+from utils.loss import build_loss
 from utils.warmup_lr import LinearWarmup
 
 
@@ -31,17 +33,9 @@ def train_model(config):
     
     # create dataloader, model, criterion
     ####################################################
-    root_path     = config['data_root']
-    split_path    = "trainlist.txt"
-    data_path     = "rgb-images"
-    ann_path      = "labels"
-    clip_length   = config['clip_length']
-    sampling_rate = config['sampling_rate']
-
-    dataset = UCF_dataset(root_path, split_path, data_path, ann_path
-                          , clip_length, sampling_rate)
+    dataset = build_dataset(config, phase='train')
     
-    dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=UCF_collate_fn
+    dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
                                  , num_workers=config['num_workers'], pin_memory=True)
     
     model = build_yolo2stream(config)
@@ -52,7 +46,7 @@ def train_model(config):
     model.train()
     model.to("cuda")
     
-    criterion = ComputeLoss(model)
+    criterion = build_loss(model, config)
     #####################################################
 
     optimizer  = optim.AdamW(params=model.parameters(), lr= config['lr'], weight_decay=config['weight_decay'])

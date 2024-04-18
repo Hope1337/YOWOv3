@@ -6,20 +6,8 @@ import os
 import cv2
 import pickle
 import numpy as np
-from datasets.ucf.transforms import Augmentation
+from datasets.ucf.transforms import Augmentation, UCF_transform
 from PIL import Image
-
-def UCF_collate_fn(batch_data):
-    clips  = []
-    boxes  = []
-    labels = []
-    for b in batch_data:
-        clips.append(b[0])
-        boxes.append(b[1])
-        labels.append(b[2])
-    
-    clips = torch.stack(clips, dim=0) # [batch_size, num_frame, C, H, W]
-    return clips, boxes, labels
             
 class UCF_dataset(data.Dataset):
 
@@ -231,3 +219,20 @@ if __name__ == "__main__":
         k = cv2.waitKey()
         if k == ord('q'):
             break
+
+
+def build_ucf_dataset(config, phase):
+    root_path     = config['data_root']
+    data_path     = "rgb-images"
+    ann_path      = "labels"
+    clip_length   = config['clip_length']
+    sampling_rate = config['sampling_rate']
+
+    if phase == 'train':
+        split_path    = "trainlist.txt"
+        return UCF_dataset(root_path, split_path, data_path, ann_path
+                          , clip_length, sampling_rate, transform=Augmentation())
+    elif phase == 'test':
+        split_path    = "testlist.txt"
+        return UCF_dataset_test(root_path, split_path, data_path, ann_path
+                          , clip_length, sampling_rate, transform=UCF_transform())

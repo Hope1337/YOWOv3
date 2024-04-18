@@ -24,10 +24,19 @@ BACKBONE3D:
     PRETRAIN:
       default: weights/backbone3D/I3D/rgb_imagenet.pth
 
+LOSS:
+  DFL:
+    top_k  : 10
+    alpha  : 0.5
+    beta   : 6.0
+    radius : 2.5
+
+dataset           : ucf
+loss              : dfl
 active_checker    : True
 num_classes       : 24
 backbone2D        : yolov8
-backbone3D        : i3d
+backbone3D        : shufflenetv2
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
@@ -40,7 +49,7 @@ acc_grad          : 16
 lr                : 0.0001
 weight_decay      : 0.0005
 max_step_warmup   : 500
-adjustlr_schedule : [1, 2, 3, 4, 5]
+adjustlr_schedule : [1, 2, 3, 4, 5, 6]
 max_epoch         : 7
 lr_decay          : 0.5
 save_folder       : weights/model_checkpoint

@@ -18,7 +18,8 @@ import glob
 
 from math import sqrt
 
-from datasets.ucf.load_data import UCF_dataset_test, UCF_collate_fn
+from datasets.build_dataset import build_dataset
+from datasets.collate_fn import collate_fn
 from model.TSN.YOLO2Stream import build_yolo2stream
 from utils.build_config import build_config
 from utils.box import non_max_suppression, box_iou
@@ -31,25 +32,14 @@ from datasets.ucf.transforms import UCF_transform
 def eval(config):
 
     ###############################################
-
-    pretrain_path = config['pretrain_path']
-    root_path     = config['data_root']
-    split_path    = "testlist.txt"
-    data_path     = "rgb-images"
-    ann_path      = "labels"
-    clip_length   = 16
-    sampling_rate = 1
-
-    dataset = UCF_dataset_test(root_path, split_path, data_path, ann_path
-                          , clip_length, sampling_rate, img_size=(224, 224), transform=UCF_transform())
+    dataset = build_dataset(config, phase='test')
     
-    dataloader = data.DataLoader(dataset, 32, False, collate_fn=UCF_collate_fn
+    dataloader = data.DataLoader(dataset, 32, False, collate_fn=collate_fn
                                  , num_workers=6, pin_memory=True)
     
     model = build_yolo2stream(config)
     model.to("cuda")
     model.eval()
-
     ###############################################
 
     # Configure

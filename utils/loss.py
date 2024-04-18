@@ -4,7 +4,7 @@ import math
 from utils.box import make_anchors
 
 class ComputeLoss:
-    def __init__(self, model):
+    def __init__(self, model, config):
         super().__init__()
         if hasattr(model, 'module'):
             model = model.module
@@ -19,11 +19,11 @@ class ComputeLoss:
         self.device = device
 
         # task aligned assigner
-        self.top_k = 10
-        self.alpha = 0.5
-        self.beta = 6.0
-        self.eps = 1e-9
-        self.radius = 2.5
+        self.top_k  = config['LOSS']['DFL']['top_k']
+        self.alpha  = config['LOSS']['DFL']['alpha']
+        self.beta   = config['LOSS']['DFL']['beta']
+        self.radius = config['LOSS']['DFL']['radius']
+        self.eps    = 1e-9
 
         self.bs = 1
         self.num_max_boxes = 0
@@ -382,3 +382,7 @@ class ComputeLoss:
         with torch.no_grad():
             alpha = v / (v - iou + (1 + eps))
         return iou - (rho2 / c2 + v * alpha)  # CIoU
+    
+
+def build_loss(model, config):
+    return ComputeLoss(model, config)
