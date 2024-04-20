@@ -165,7 +165,10 @@ class ShuffleNetV2(nn.Module):
         state_dict = self.state_dict()
 
         pretrain_state_dict = torch.load(self.pretrain_path)
+
         for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
+            
             if param_name not in state_dict:
                 continue
             state_dict[param_name] = value

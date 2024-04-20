@@ -80,7 +80,7 @@ class UCF_dataset(data.Dataset):
 
         boxes = np.array(boxes)
         labels = np.array(labels)
-        
+
         # clip   : list of (num_frame) PIL image (RGB order, 0 .. 255)
         # boxes  : np array [nbox, 4], absolute coordinate (tl-br)
         # labels : np array [nbox, nclass]

@@ -1,0 +1,142 @@
+BACKBONE2D:
+  YOLOv8:
+    ver : m
+
+    PRETRAIN:
+      n : null
+      s : null 
+      m : weights/backbone2D/YOLOv8/v8_m.pth
+      l : weights/backbone2D/YOLOv8/v8_l.pth
+      x : null
+
+BACKBONE3D:
+  SHUFFLENETv2:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.25x : null
+      width_mult_0.5x  : null
+      width_mult_1.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_1.0x_RGB_16_best.pth
+      width_mult_1.5x  : null
+      width_mult_2.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_2.0x_RGB_16_best.pth
+      
+  I3D:
+    PRETRAIN:
+      default: weights/backbone3D/I3D/rgb_imagenet.pth
+
+LOSS:
+  DFL:
+    top_k  : 10
+    alpha  : 0.5
+    beta   : 6.0
+    radius : 2.5
+
+dataset           : ava
+loss              : dfl
+active_checker    : True
+num_classes       : 80
+backbone2D        : yolov8
+backbone3D        : shufflenetv2
+fusion_module     : CFAM
+mode              : decoupled
+interchannels     : [256, 256, 256]
+pretrain_path     : null
+data_root         : /home/manh/Datasets/AVA/AVA_Dataset
+clip_length       : 16
+batch_size        : 8
+num_workers       : 6
+acc_grad          : 16
+lr                : 0.0001
+weight_decay      : 0.0005
+max_step_warmup   : 500
+adjustlr_schedule : [1, 2, 3, 4, 5]
+max_epoch         : 9
+lr_decay          : 0.5
+save_folder       : weights/model_checkpoint
+sampling_rate     : 1
+labelmap          : evaluator/Evaluation/ava_action_list_v2.2_for_activitynet_2019.pbtxt
+groundtruth       : evaluator/Evaluation/ava_val_v2.2.csv
+detections        : ava_result/ava_predicted_file.csv
+
+
+idx2name:
+  0 : bend/bow (at the waist)
+  1 : crawl
+  2 : crouch/kneel
+  3 : dance
+  4 : fall down
+  5 : get up
+  6 : jump/leap
+  7 : lie/sleep
+  8 : martial art
+  9 : run/jog
+  10 : sit
+  11 : stand
+  12 : swim
+  13 : walk
+  14 : answer phone
+  15 : brush teeth
+  16 : carry/hold (an object)
+  17 : catch (an object)
+  18 : chop
+  19 : climb (e.g., a mountain)
+  20 : clink glass
+  21 : close (e.g., a door, a box)
+  22 : cook
+  23 : cut
+  24 : dig
+  25 : dress/put on clothing
+  26 : drink
+  27 : drive (e.g., a car, a truck)
+  28 : eat
+  29 : enter
+  30 : exit
+  31 : extract
+  32 : fishing
+  33 : hit (an object)
+  34 : kick (an object)
+  35 : lift/pick up
+  36 : listen (e.g., to music)
+  37 : open (e.g., a window, a car door)
+  38 : paint
+  39 : play board game
+  40 : play musical instrument
+  41 : play with pets
+  42 : point to (an object)
+  43 : press
+  44 : pull (an object)
+  45 : push (an object)
+  46 : put down
+  47 : read
+  48 : ride (e.g., a bike, a car, a horse)
+  49 : row boat
+  50 : sail boat
+  51 : shoot
+  52 : shovel
+  53 : smoke
+  54 : stir
+  55 : take a photo
+  56 : text on/look at a cellphone
+  57 : throw
+  58 : touch (an object)
+  59 : turn (e.g., a screwdriver)
+  60 : watch (e.g., TV)
+  61 : work on a computer
+  62 : write
+  63 : fight/hit (a person)
+  64 : give/serve (an object) to (a person)
+  65 : grab (a person)
+  66 : hand clap
+  67 : hand shake
+  68 : hand wave
+  69 : hug (a person)
+  70 : kick (a person)
+  71 : kiss (a person)
+  72 : lift (a person)
+  73 : listen to (a person)
+  74 : play with kids
+  75 : push (another person)
+  76 : sing to (e.g., self, a person, a group)
+  77 : take (an object) from (a person)
+  78 : talk to (e.g., self, a person, a group)
+  79 : watch (a person)

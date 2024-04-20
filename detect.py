@@ -37,6 +37,7 @@ def detect(config):
 
     for idx in range(dataset.__len__()):
         origin_image, clip, bboxes, labels = dataset.__getitem__(idx, get_origin_image=True)
+        #print(bboxes)
 
         clip = clip.unsqueeze(0).to("cuda")
         outputs = model(clip)

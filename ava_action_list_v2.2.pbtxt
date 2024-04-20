@@ -1,0 +1,400 @@
+label {
+  name: "bend/bow (at the waist)"
+  label_id: 1
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "crawl"
+  label_id: 2
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "crouch/kneel"
+  label_id: 3
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "dance"
+  label_id: 4
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "fall down"
+  label_id: 5
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "get up"
+  label_id: 6
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "jump/leap"
+  label_id: 7
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "lie/sleep"
+  label_id: 8
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "martial art"
+  label_id: 9
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "run/jog"
+  label_id: 10
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "sit"
+  label_id: 11
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "stand"
+  label_id: 12
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "swim"
+  label_id: 13
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "walk"
+  label_id: 14
+  label_type: PERSON_MOVEMENT
+}
+label {
+  name: "answer phone"
+  label_id: 15
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "brush teeth"
+  label_id: 16
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "carry/hold (an object)"
+  label_id: 17
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "catch (an object)"
+  label_id: 18
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "chop"
+  label_id: 19
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "climb (e.g., a mountain)"
+  label_id: 20
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "clink glass"
+  label_id: 21
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "close (e.g., a door, a box)"
+  label_id: 22
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "cook"
+  label_id: 23
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "cut"
+  label_id: 24
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "dig"
+  label_id: 25
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "dress/put on clothing"
+  label_id: 26
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "drink"
+  label_id: 27
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "drive (e.g., a car, a truck)"
+  label_id: 28
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "eat"
+  label_id: 29
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "enter"
+  label_id: 30
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "exit"
+  label_id: 31
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "extract"
+  label_id: 32
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "fishing"
+  label_id: 33
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "hit (an object)"
+  label_id: 34
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "kick (an object)"
+  label_id: 35
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "lift/pick up"
+  label_id: 36
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "listen (e.g., to music)"
+  label_id: 37
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "open (e.g., a window, a car door)"
+  label_id: 38
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "paint"
+  label_id: 39
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "play board game"
+  label_id: 40
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "play musical instrument"
+  label_id: 41
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "play with pets"
+  label_id: 42
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "point to (an object)"
+  label_id: 43
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "press"
+  label_id: 44
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "pull (an object)"
+  label_id: 45
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "push (an object)"
+  label_id: 46
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "put down"
+  label_id: 47
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "read"
+  label_id: 48
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "ride (e.g., a bike, a car, a horse)"
+  label_id: 49
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "row boat"
+  label_id: 50
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "sail boat"
+  label_id: 51
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "shoot"
+  label_id: 52
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "shovel"
+  label_id: 53
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "smoke"
+  label_id: 54
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "stir"
+  label_id: 55
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "take a photo"
+  label_id: 56
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "text on/look at a cellphone"
+  label_id: 57
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "throw"
+  label_id: 58
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "touch (an object)"
+  label_id: 59
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "turn (e.g., a screwdriver)"
+  label_id: 60
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "watch (e.g., TV)"
+  label_id: 61
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "work on a computer"
+  label_id: 62
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "write"
+  label_id: 63
+  label_type: OBJECT_MANIPULATION
+}
+label {
+  name: "fight/hit (a person)"
+  label_id: 64
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "give/serve (an object) to (a person)"
+  label_id: 65
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "grab (a person)"
+  label_id: 66
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "hand clap"
+  label_id: 67
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "hand shake"
+  label_id: 68
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "hand wave"
+  label_id: 69
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "hug (a person)"
+  label_id: 70
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "kick (a person)"
+  label_id: 71
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "kiss (a person)"
+  label_id: 72
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "lift (a person)"
+  label_id: 73
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "listen to (a person)"
+  label_id: 74
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "play with kids"
+  label_id: 75
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "push (another person)"
+  label_id: 76
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "sing to (e.g., self, a person, a group)"
+  label_id: 77
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "take (an object) from (a person)"
+  label_id: 78
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "talk to (e.g., self, a person, a group)"
+  label_id: 79
+  label_type: PERSON_INTERACTION
+}
+label {
+  name: "watch (a person)"
+  label_id: 80
+  label_type: PERSON_INTERACTION
+}

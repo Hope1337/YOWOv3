@@ -36,11 +36,11 @@ loss              : dfl
 active_checker    : True
 num_classes       : 24
 backbone2D        : yolov8
-backbone3D        : shufflenetv2
+backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
-interchannels     : [256, 256, 256]
-pretrain_path     : weights/model_checkpoint/ema_epoch_7.pth
+interchannels     : [128, 128, 128]
+pretrain_path     : weights/model_checkpoint/ema_epoch_3.pth
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
 clip_length       : 16
 batch_size        : 8
@@ -49,7 +49,7 @@ acc_grad          : 16
 lr                : 0.0001
 weight_decay      : 0.0005
 max_step_warmup   : 500
-adjustlr_schedule : [1, 2, 3, 4, 5, 6]
+adjustlr_schedule : [1, 2, 3, 4, 5]
 max_epoch         : 7
 lr_decay          : 0.5
 save_folder       : weights/model_checkpoint

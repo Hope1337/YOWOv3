@@ -335,7 +335,6 @@ class ComputeLoss:
         norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
         norm_align_metric = norm_align_metric.unsqueeze(-1)
         target_scores = target_scores * norm_align_metric
-        #target_scores = target_scores
 
         return target_bboxes, target_scores, fg_mask.bool()
 
