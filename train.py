@@ -36,7 +36,7 @@ def train_model(config):
     dataset = build_dataset(config, phase='train')
     
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
-                                 , num_workers=config['num_workers'], pin_memory=True)
+                                 , num_workers=config['num_workers'], pin_memory=True, drop_last=True)
     
     model = build_yolo2stream(config)
     

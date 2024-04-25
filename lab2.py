@@ -1,18 +1,46 @@
-import re
+import torch
+import torch.utils.data as data
+import torch.nn as nn
+import torchvision
+import torchvision.transforms.functional as FT
+import torch.nn.functional as F
+import torch.optim as optim
 
-# Đường dẫn đến file chứa dữ liệu
-file_path = "ava_action_list_v2.2.pbtxt"
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+import xml.etree.ElementTree as ET
+import os
+import cv2
+import random
+import sys
+import glob
 
-# Đọc nội dung file
-with open(file_path, 'r') as file:
-    content = file.read()
+from math import sqrt
+from utils.gradflow_check import plot_grad_flow
+from utils.EMA import EMA
+import logging
+from utils.build_config import build_config
+from datasets.ucf.load_data import UCF_dataset
+from datasets.collate_fn import collate_fn
+from datasets.build_dataset import build_dataset
+from model.TSN.YOLO2Stream import build_yolo2stream
+from utils.loss import build_loss
+from utils.warmup_lr import LinearWarmup
+import tqdm
 
-# Tìm tất cả các khối dict trong nội dung file
-pattern = r"label \{([^}]*)\}"
-matches = re.findall(pattern, content, re.MULTILINE | re.DOTALL)
+config = build_config()
+#dataset = build_dataset(config, phase='train')
 
-# Lặp qua từng khối dict và trích xuất label_id và name
-for match in matches:
-    label_id = re.search(r"label_id: (\d+)", match).group(1)
-    name = re.search(r'name: "(.*)"', match).group(1)
-    print('{} : {}'.format(int(label_id) - 1, name))
+#cnt = torch.zeros(80)
+#print(cnt.shape)
+#for idx in tqdm.tqdm(range(dataset.__len__())):
+    #clip, box, label = dataset.__getitem__(idx)
+    
+    #for t in label:
+        #cnt[t.bool()] += 1
+
+#for x in cnt:
+    #print(x)
+
+print(config['train_class_ratio'][31] + 1)

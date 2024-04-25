@@ -30,6 +30,11 @@ LOSS:
     alpha  : 0.5
     beta   : 6.0
     radius : 2.5
+    mode   : balance
+
+    scale_cls_loss : 0.5
+    scale_box_loss : 7.5
+    scale_dfl_loss : 1.5
 
 dataset           : ucf
 loss              : dfl

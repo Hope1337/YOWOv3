@@ -24,6 +24,7 @@ from utils.box import draw_bounding_box
 from utils.box import non_max_suppression
 from model.TSN.YOLO2Stream import build_yolo2stream
 from utils.build_config import build_config
+from utils.flops import FLOPs_and_Params
 
 def detect(config):
 
@@ -34,6 +35,8 @@ def detect(config):
     mapping = config['idx2name']
     model.to("cuda")
     model.eval()
+
+    FLOPs_and_Params(model, 224, 16, 'cuda')
 
     for idx in range(dataset.__len__()):
         origin_image, clip, bboxes, labels = dataset.__getitem__(idx, get_origin_image=True)

@@ -14,7 +14,8 @@ def eval(config):
     model = build_yolo2stream(config)
     model.to("cuda")
     model.eval()
-
+    
+    black_list = [2, 16, 18, 19, 21, 23, 25, 31, 32, 33, 35, 39, 40, 42, 44, 50, 53, 55, 71, 75]
     ava_result_file = config['detections']
     with open(ava_result_file, 'w', newline='') as file:
 
@@ -35,11 +36,19 @@ def eval(config):
         
             writer = csv.writer(file)
             for output in outputs:
-                writer.writerow([video_name, sec, output[0].item(), output[1].item(),
-                                 output[2].item(), output[3].item(), int(output[5].item()) + 1, output[4].item()])
+                if (int(output[5].item()) + 1) in black_list:
+                    continue
+                tl_x = round(output[0].item(), 3)
+                tl_y = round(output[1].item(), 3)
+                br_x = round(output[2].item(), 3)
+                br_y = round(output[3].item(), 3)
+                conf = round(output[4].item(), 3)
+                writer.writerow([video_name, sec, tl_x, tl_y, br_x, 
+                    br_y, int(output[5].item()) + 1, conf])
+
             
 
 config = build_config()
-#eval(config)
+eval(config)
 
 get_ava_performance.eval(config)

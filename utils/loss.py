@@ -2,6 +2,7 @@ import torch
 from torch.nn.functional import cross_entropy, one_hot
 import math
 from utils.box import make_anchors
+import cv2
 
 class ComputeLoss:
     def __init__(self, model, config):
@@ -19,11 +20,23 @@ class ComputeLoss:
         self.device = device
 
         # task aligned assigner
-        self.top_k  = config['LOSS']['DFL']['top_k']
-        self.alpha  = config['LOSS']['DFL']['alpha']
-        self.beta   = config['LOSS']['DFL']['beta']
-        self.radius = config['LOSS']['DFL']['radius']
-        self.eps    = 1e-9
+        self.top_k          = config['LOSS']['DFL']['top_k']
+        self.alpha          = config['LOSS']['DFL']['alpha']
+        self.beta           = config['LOSS']['DFL']['beta']
+        self.radius         = config['LOSS']['DFL']['radius']
+        self.scale_cls_loss = config['LOSS']['DFL']['scale_cls_loss']
+        self.scale_box_loss = config['LOSS']['DFL']['scale_box_loss']
+        self.scale_dfl_loss = config['LOSS']['DFL']['scale_dfl_loss']
+        self.eps            = 1e-9
+        self.mode           = config['LOSS']['DFL']['mode'] 
+
+        if self.mode == 'unbalance':
+            ratio_dict = config['class_ratio']
+            self.class_weights = torch.zeros(len(list(ratio_dict.keys())))
+            for x in ratio_dict.keys():
+                self.class_weights[x] = 1.0 - ratio_dict[x]
+
+            self.class_weights = self.class_weights.to('cuda')
 
         self.bs = 1
         self.num_max_boxes = 0
@@ -96,10 +109,20 @@ class ComputeLoss:
         target_bboxes, target_scores, fg_mask = self.assign(scores, bboxes,
                                                             gt_labels, gt_bboxes, mask_gt,
                                                             anchor_points * stride_tensor, stride_tensor)
+        #a1 = target_scores[fg_mask].float()
+        #b1 = pred_scores[fg_mask].sigmoid()
+        #for a, b in zip(a1, b1):
+            #a = torch.round(a, decimals=3)
+            #b = torch.round(b, decimals=3)
+            #print(a)
+            #print(b)
+            #print('######################################')
+            #import time
+            #time.sleep(10)
         
         mask = target_scores.gt(0)[fg_mask]
 
-        target_bboxes /= stride_tensor
+        target_bboxes /= stride_tensor 
         target_scores_sum = target_scores.sum()
 
         #for x in target_scores[fg_mask]:
@@ -129,31 +152,30 @@ class ComputeLoss:
         
         ########################################################################################################
 
-        ########################################################################################################
+        
+        if self.mode == 'unbalance':
         # cls loss
-        #pos_scores = pred_scores[fg_mask][mask].sigmoid()
-        #neg_scores = torch.cat((pred_scores[fg_mask][~mask], pred_scores[~fg_mask].view(-1)), dim=0).sigmoid()
+            pos_scores = pred_scores[fg_mask][mask].sigmoid()
+            neg_scores = torch.cat((pred_scores[fg_mask][~mask], pred_scores[~fg_mask].view(-1)), dim=0).sigmoid()
 
-        #alpha = 0.75
-        #gamma = 2.
-        #eps = 1e-9
-        #num_pos = mask.sum()
+            pos_weight  = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[mask]
 
-        ##print(num_pos)
-        ##print(loss_cls_pos[mask].sum())
-        ##print(loss_cls_neg.sum())
-        ##sys.exit()
+            neg_weight1 = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[~mask]  
+            neg_weight2 = self.class_weights.unsqueeze(0).repeat([pred_scores[~fg_mask].shape[0], 1]).view(-1)
+            neg_weight  = torch.cat((neg_weight1, neg_weight2))
 
-        #pos_loss = - alpha * (1 - pos_scores) ** gamma * torch.log(pos_scores + eps) 
-        #neg_loss = - (1 - alpha) * neg_scores ** gamma * torch.log(1. - neg_scores + eps)
-        #loss_cls = (pos_loss.sum() + neg_loss.sum()) / num_pos
-        ########################################################################################################
+            pos_weight = torch.exp(pos_weight)
+            neg_weight = torch.exp(1.0 - neg_weight)
 
-        #print("loss_cls : {}, pos_los : {}, neg_loss : {}".format(loss_cls.sum().item(), pos_loss.sum().item(), neg_loss.sum().item()))
+            gamma = 0.5
 
-        # cls loss
-        loss_cls = self.bce(pred_scores, target_scores.to(pred_scores.dtype))
-        loss_cls = loss_cls.sum() / target_scores_sum
+            pos_loss = - pos_weight * (1 - pos_scores) ** gamma * torch.log(pos_scores + self.eps) 
+            neg_loss = - neg_weight * neg_scores ** gamma * torch.log(1. - neg_scores + self.eps)
+            loss_cls = (pos_loss.sum() + neg_loss.sum()) / target_scores_sum
+
+        elif self.mode == 'balance':
+            loss_cls = self.bce(pred_scores, target_scores.to(pred_scores.dtype))
+            loss_cls = loss_cls.sum() / target_scores_sum
 
         # box loss
         loss_box = torch.zeros(1, device=self.device)
@@ -171,9 +193,14 @@ class ComputeLoss:
             loss_dfl = (loss_dfl * weight).sum() / target_scores_sum
 
 
-        loss_cls *= 0.5
-        loss_box *= 7.5
-        loss_dfl *= 1.5
+        loss_cls *= self.scale_cls_loss
+        loss_box *= self.scale_box_loss
+        loss_dfl *= self.scale_dfl_loss
+
+        #print(loss_cls)
+        #print(loss_box)
+        #print(loss_dfl)
+        #print()
 
         #print("cls : {}, box : {}, dfl : {}".format(loss_cls.item(), loss_box.item(), loss_dfl.item()))
         return loss_cls + loss_box + loss_dfl  # loss(cls, box, dfl)
@@ -226,11 +253,11 @@ class ComputeLoss:
         true_scores      = true_labels.unsqueeze(1).repeat([1, pred_scores_loss.shape[1], 1, 1])
 
         # [B, 1029, nbox]
-        scaler = true_scores.sum(-1)
-        scaler = scaler.clamp(min=1)
+        #scaler = true_scores.sum(-1)
+        #scaler = scaler.clamp(min=1)
 
         # [B, nbox, 1029]
-        scores_loss = ((true_scores * pred_scores_loss).sum(-1) / scaler).permute(0, 2, 1).contiguous()
+        scores_loss = ((true_scores * pred_scores_loss).sum(-1)).permute(0, 2, 1).contiguous()
         
         align_metric = scores_loss.pow(self.alpha) * overlaps.pow(self.beta)
         
@@ -329,12 +356,13 @@ class ComputeLoss:
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
         # normalize
-        align_metric *= mask_pos
-        pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
-        pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
-        norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
-        norm_align_metric = norm_align_metric.unsqueeze(-1)
-        target_scores = target_scores * norm_align_metric
+        if self.mode == 'balance':
+            align_metric *= mask_pos
+            pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
+            pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
+            norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
+            norm_align_metric = norm_align_metric.unsqueeze(-1)
+            target_scores = target_scores * norm_align_metric
 
         return target_bboxes, target_scores, fg_mask.bool()
 

@@ -58,7 +58,7 @@ def non_max_suppression(prediction, conf_threshold=0.25, iou_threshold=0.45):
 
     # Settings
     max_wh = 7680  # (pixels) maximum box width and height
-    max_det = 300  # the maximum number of boxes to keep after NMS
+    max_det = 40  # the maximum number of boxes to keep after NMS
     max_nms = 30000  # maximum number of boxes into torchvision.ops.nms()
 
     start = time.time()
@@ -111,17 +111,17 @@ def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(255, 255, 25
   """
   lw = max(round(sum(image.shape) / 2 * 0.003), 2)
   p1, p2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
-  cv2.rectangle(image, p1, p2, color, thickness=lw, lineType=cv2.LINE_AA)
+  cv2.rectangle(image, p1, p2, color, thickness=lw-1, lineType=cv2.LINE_AA)
   if label is not None:
     tf = max(lw - 1, 1)  # font thickness
-    w, h = cv2.getTextSize(label, 0, fontScale=lw / 3, thickness=tf)[0]  # text width, height
+    w, h = cv2.getTextSize(label, 0, fontScale=lw / 10, thickness=tf)[0]  # text width, height
     outside = p1[1] - h >= 3
     p2 = p1[0] + w, p1[1] - h - 3 if outside else p1[1] + h + 3
     cv2.rectangle(image, p1, p2, color, -1, cv2.LINE_AA)  # filled
     cv2.putText(image,
                 label, (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
                 0,
-                lw / 3,
+                lw / 10,
                 txt_color,
                 thickness=tf,
                 lineType=cv2.LINE_AA)

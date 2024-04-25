@@ -58,7 +58,7 @@ class AVA_dataset(data.Dataset):
         video_name, sec = self.data_list[index].split('/')
         str_sec = sec
         sec = int(sec)
-        key_frame_idx = (sec - 900) * 30
+        key_frame_idx = (sec - 900) * 30 + 1
         video_path = os.path.join(self.data_path, video_name)
 
         clip        = []
