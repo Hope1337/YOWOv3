@@ -87,7 +87,6 @@ class YOLO2Stream(torch.nn.Module):
                                       mode=self.mode)
         self.detection_head.stride = torch.tensor([224 / x[0].shape[-2] for x in out_2D])
         self.stride = self.detection_head.stride
-        self.detection_head.initialize_biases()
 
         if pretrain_path is not None:
             self.load_state_dict(torch.load(pretrain_path))
@@ -95,6 +94,7 @@ class YOLO2Stream(torch.nn.Module):
             self.net2D.load_pretrain()
             self.net3D.load_pretrain()
             self.init_conv2d()
+            self.detection_head.initialize_biases()
 
     def forward(self, clips):
         key_frames = clips[:, :, -1, :, :]
@@ -125,6 +125,23 @@ class YOLO2Stream(torch.nn.Module):
         """
         Initialize convolution parameters.
         """
+
+        for c in self.decoupled_head.modules():
+            if isinstance(c, nn.Conv2d):
+                nn.init.kaiming_normal_(c.weight)
+                if c.bias is not None:
+                    nn.init.constant_(c.bias, 0.)
+
+        for c in self.fusion.modules():
+            if isinstance(c, nn.Conv2d):
+                nn.init.kaiming_normal_(c.weight)
+                if c.bias is not None:
+                    nn.init.constant_(c.bias, 0.)
+
+        for c in self.decoupled_head.modules():
+            if isinstance(c, nn.Conv2d):
+                nn.init.kaiming_normal_(c.weight)
+
         for m in self.modules():
             if isinstance(m, nn.BatchNorm2d):
                 m.eps = 1e-3

@@ -36,7 +36,7 @@ def detect(config):
     model.to("cuda")
     model.eval()
 
-    FLOPs_and_Params(model, 224, 16, 'cuda')
+    #FLOPs_and_Params(model, 224, 16, 'cuda')
 
     for idx in range(dataset.__len__()):
         origin_image, clip, bboxes, labels = dataset.__getitem__(idx, get_origin_image=True)

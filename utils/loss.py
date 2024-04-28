@@ -124,34 +124,6 @@ class ComputeLoss:
 
         target_bboxes /= stride_tensor 
         target_scores_sum = target_scores.sum()
-
-        #for x in target_scores[fg_mask]:
-            #print(x)
-        #sys.exit()
-
-        #######################################################################################################
-        # cls loss
-        #loss_cls_pos = self.bce(pred_scores[fg_mask], target_scores[fg_mask].to(pred_scores.dtype))
-        #loss_cls_neg = self.bce(pred_scores[~fg_mask], target_scores[~fg_mask].to(pred_scores.dtype))
-
-        #loss_cls_neg = torch.cat((loss_cls_pos[~mask], loss_cls_neg.view(-1)), dim=0)
-
-        #ratio = 1
-        #num_pos = mask.sum()
-        
-        #loss_cls_neg, _ = torch.sort(loss_cls_neg, descending=True)
-        #loss_cls_neg = loss_cls_neg[: num_pos * ratio]
-
-        ##print(num_pos)
-        ##print(loss_cls_pos[mask].sum())
-        ##print(loss_cls_neg.sum())
-        ##sys.exit()
-
-        #loss_cls = (loss_cls_pos[mask].sum() + loss_cls_neg.sum()) / num_pos
-        #print("loss_cls : {}, pos_los : {}, neg_loss : {}".format(loss_cls.sum().item(), loss_cls_pos[mask].sum().item(), loss_cls_neg.sum().item()))
-        
-        ########################################################################################################
-
         
         if self.mode == 'unbalance':
         # cls loss
@@ -169,7 +141,13 @@ class ComputeLoss:
 
             gamma = 0.5
 
-            pos_loss = - pos_weight * (1 - pos_scores) ** gamma * torch.log(pos_scores + self.eps) 
+            #pos_loss = - pos_weight * (1 - pos_scores) ** gamma * torch.log(pos_scores + self.eps) 
+            #neg_loss = - neg_weight * neg_scores ** gamma * torch.log(1. - neg_scores + self.eps)
+            
+            tg       = target_scores[fg_mask][mask]
+            pos1     = - pos_weight * abs(tg - pos_scores) ** gamma
+            pos2     = tg*torch.log(pos_scores + self.eps) + (1. - tg)*torch.log(1. - pos_scores + self.eps)
+            pos_loss = pos1*pos2
             neg_loss = - neg_weight * neg_scores ** gamma * torch.log(1. - neg_scores + self.eps)
             loss_cls = (pos_loss.sum() + neg_loss.sum()) / target_scores_sum
 
@@ -197,10 +175,12 @@ class ComputeLoss:
         loss_box *= self.scale_box_loss
         loss_dfl *= self.scale_dfl_loss
 
-        #print(loss_cls)
-        #print(loss_box)
-        #print(loss_dfl)
-        #print()
+        if torch.isnan(loss_cls):
+            print('loss_cls')
+        if torch.isnan(loss_box):
+            print('loss_box')
+        if torch.isnan(loss_dfl):
+            print('loss_dfl')
 
         #print("cls : {}, box : {}, dfl : {}".format(loss_cls.item(), loss_box.item(), loss_dfl.item()))
         return loss_cls + loss_box + loss_dfl  # loss(cls, box, dfl)
@@ -356,13 +336,20 @@ class ComputeLoss:
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
         # normalize
-        if self.mode == 'balance':
-            align_metric *= mask_pos
-            pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
-            pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
-            norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
-            norm_align_metric = norm_align_metric.unsqueeze(-1)
-            target_scores = target_scores * norm_align_metric
+        #if self.mode == 'balance':
+            #align_metric *= mask_pos
+            #pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
+            #pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
+            #norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
+            #norm_align_metric = norm_align_metric.unsqueeze(-1)
+            #target_scores = target_scores * norm_align_metric
+
+        align_metric *= mask_pos
+        pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
+        pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
+        norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
+        norm_align_metric = norm_align_metric.unsqueeze(-1)
+        target_scores = target_scores * norm_align_metric
 
         return target_bboxes, target_scores, fg_mask.bool()
 

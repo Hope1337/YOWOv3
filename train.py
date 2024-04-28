@@ -59,7 +59,7 @@ def train_model(config):
     save_folder       = config['save_folder']
     
     torch.backends.cudnn.benchmark = True
-    cur_epoch = 1
+    cur_epoch = 4
     loss_acc = 0.0
     ema = EMA(model)
 
@@ -94,7 +94,7 @@ def train_model(config):
             #plot_grad_flow(model.named_parameters()) #model too large, can't see anything!
             #plt.show()
 
-            if (iteration + 1) % acc_grad == 0:
+            if ((iteration + 1) % acc_grad == 0) or (iteration + 1 == len(dataloader)):
                 cnt_pram_update = cnt_pram_update + 1
                 if cur_epoch == 1:
                     warmup_lr(optimizer, cnt_pram_update)

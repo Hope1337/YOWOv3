@@ -32,7 +32,7 @@ LOSS:
     radius : 2.5
     mode   : unbalance
 
-    scale_cls_loss : 1.0
+    scale_cls_loss : 1.5
     scale_box_loss : 7.5
     scale_dfl_loss : 1.5
 
@@ -41,17 +41,17 @@ loss              : dfl
 active_checker    : True
 num_classes       : 80
 backbone2D        : yolov8
-backbone3D        : i3d
+backbone3D        : shufflenetv2
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : /home/manh/checkpoint/18.88_ava/ema_epoch_9.pth
+pretrain_path     : weights/model_checkpoint/epoch_3.pth
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
 clip_length       : 16
 batch_size        : 8
 num_workers       : 6
 acc_grad          : 16
-lr                : 0.0001
+lr                : 0.000025
 weight_decay      : 0.0005
 max_step_warmup   : 500
 adjustlr_schedule : [2, 3, 4, 5, 6]
