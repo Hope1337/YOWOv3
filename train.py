@@ -59,7 +59,7 @@ def train_model(config):
     save_folder       = config['save_folder']
     
     torch.backends.cudnn.benchmark = True
-    cur_epoch = 4
+    cur_epoch = 1
     loss_acc = 0.0
     ema = EMA(model)
 

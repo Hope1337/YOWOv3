@@ -25,19 +25,30 @@ BACKBONE3D:
       default: weights/backbone3D/I3D/rgb_imagenet.pth
 
 LOSS:
-  DFL:
+  TAL:
     top_k  : 10
     alpha  : 0.5
     beta   : 6.0
     radius : 2.5
-    mode   : balance
+
+    scale_cls_loss : 0.5
+    scale_box_loss : 7.5
+    scale_dfl_loss : 1.5
+
+  SIMOTA:
+    top_k  : 10
+    gamma  : 0.5
+    radius : 2.5
+
+    dynamic_k     : False
+    dynamic_top_k : 40
 
     scale_cls_loss : 0.5
     scale_box_loss : 7.5
     scale_dfl_loss : 1.5
 
 dataset           : ucf
-loss              : dfl
+loss              : tal
 active_checker    : True
 num_classes       : 24
 backbone2D        : yolov8

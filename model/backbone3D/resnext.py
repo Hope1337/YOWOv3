@@ -187,12 +187,16 @@ class ResNeXt(nn.Module):
         state_dict = self.state_dict()
 
         pretrain_state_dict = torch.load(self.pretrain_path)
+
         for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
             if param_name not in state_dict:
                 continue
             state_dict[param_name] = value
             
         self.load_state_dict(state_dict)
+
+        print("backbone3D : resnext pretrained loaded!")
 
 
 def resnext50(**kwargs):
@@ -202,10 +206,10 @@ def resnext50(**kwargs):
     return model
 
 
-def resnext101(**kwargs):
+def resnext101(config):
     """Constructs a ResNet-101 model.
     """
-    model = ResNeXt(ResNeXtBottleneck, [3, 4, 23, 3], **kwargs, pretrain_path=config['pretrain_resnext101'])
+    model = ResNeXt(ResNeXtBottleneck, [3, 4, 23, 3], pretrain_path=config['BACKBONE3D']['RESNEXT']['PRETRAIN']['ver_101'])
     return model
 
 

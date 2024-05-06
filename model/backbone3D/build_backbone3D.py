@@ -4,7 +4,7 @@ def build_backbone3D(config):
     backbone_3D = config['backbone3D']
 
     if backbone_3D == 'resnext101':
-        backbone3D = resnext.resnext101()
+        backbone3D = resnext.resnext101(config)
     elif backbone_3D == 'mobilenetv2':
         backbone3D = mobilenetv2.get_model()
     elif backbone_3D == 'shufflenetv2':

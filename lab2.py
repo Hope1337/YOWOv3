@@ -43,4 +43,6 @@ config = build_config()
 #for x in cnt:
     #print(x)
 
-print(config['train_class_ratio'][31] + 1)
+#print(config['train_class_ratio'][31] + 1)
+
+print(type(config['LOSS']['SIMOTA']['dynamic_k']))
