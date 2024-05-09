@@ -446,7 +446,8 @@ class SimOTA:
         mask = target_scores.gt(0)[fg_mask]
 
         target_bboxes /= stride_tensor 
-        target_scores_sum = target_scores.sum()
+        #target_scores_sum = target_scores.sum()
+        num_pos = fg_mask.sum()
         
         # cls loss
         pos_scores = pred_scores[fg_mask][mask].sigmoid()
@@ -468,7 +469,7 @@ class SimOTA:
         pos2     = tg*torch.log(pos_scores + self.eps) + (1. - tg)*torch.log(1. - pos_scores + self.eps)
         pos_loss = pos1*pos2
         neg_loss = - neg_weight * torch.clamp(neg_scores, min=self.eps) ** gamma * torch.log(1. - neg_scores + self.eps)
-        loss_cls = (pos_loss.sum() + neg_loss.sum()) / target_scores_sum
+        loss_cls = (pos_loss.sum() + neg_loss.sum()) / num_pos
         #loss_cls = self.bce(pred_scores, target_scores.to(pred_scores.dtype))
         #loss_cls = loss_cls.sum() / target_scores_sum
 
@@ -477,15 +478,17 @@ class SimOTA:
         loss_dfl = torch.zeros(1, device=self.device)
         if fg_mask.sum():
             # IoU loss
-            weight = torch.masked_select(target_scores.sum(-1), fg_mask).unsqueeze(-1)
+            #weight = torch.masked_select(target_scores.sum(-1), fg_mask).unsqueeze(-1)
             loss_box = self.iou(pred_bboxes[fg_mask], target_bboxes[fg_mask])
-            loss_box = ((1.0 - loss_box) * weight).sum() / target_scores_sum
+            #loss_box = ((1.0 - loss_box) * weight).sum() / target_scores_sum
+            loss_box = (1.0 - loss_box).sum() / num_pos
             # DFL loss
             a, b = torch.split(target_bboxes, 2, -1)
             target_lt_rb = torch.cat((anchor_points - a, b - anchor_points), -1)
             target_lt_rb = target_lt_rb.clamp(0, self.dfl_ch - 1.01)  # distance (left_top, right_bottom)
             loss_dfl = self.df_loss(pred_output[fg_mask].view(-1, self.dfl_ch), target_lt_rb[fg_mask])
-            loss_dfl = (loss_dfl * weight).sum() / target_scores_sum
+            #loss_dfl = (loss_dfl * weight).sum() / target_scores_sum
+            loss_dfl = loss_dfl.sum() / num_pos
 
 
         loss_cls *= self.scale_cls_loss
@@ -542,7 +545,7 @@ class SimOTA:
         #align_metric = pred_scores[i[0], :, i[1]].pow(self.alpha) * overlaps.pow(self.beta)
 
         # [B, 1029, nbox, nclass]
-        pred_scores_loss = pred_scores.unsqueeze(-2).repeat([1, 1, overlaps.shape[1], 1])
+        pred_scores_loss = pred_scores.unsqueeze(-2).repeat([1, 1, overlaps.shape[1], 1])*(overlaps.permute(0, 2, 1).contiguous().unsqueeze(-1))   
 
         # [B, 1029, nbox, nclass]
         true_scores      = true_labels.unsqueeze(1).repeat([1, pred_scores_loss.shape[1], 1, 1])
@@ -555,12 +558,12 @@ class SimOTA:
         # print((true_scores*pred_scores_loss).sum(-1))
 
         # scores_loss = ((true_scores * pred_scores_loss).sum(-1)).permute(0, 2, 1).contiguous()
-        # scores_loss = ((F.binary_cross_entropy(pred_scores_loss, true_scores, reduction='none')).sum(-1)).permute(0, 2, 1).contiguous()
+        scores_loss = ((F.binary_cross_entropy(pred_scores_loss, true_scores, reduction='none')).sum(-1)).permute(0, 2, 1).contiguous()
 
-        class_weights = self.class_weights.unsqueeze(0).unsqueeze(0).unsqueeze(0)
-        pos_loss = - true_scores * torch.exp(class_weights) * torch.clamp(1. - pred_scores_loss, self.eps) ** self.gamma * torch.log(pred_scores_loss + self.eps)
-        neg_loss = - (1. - true_scores) * torch.exp(1. - class_weights) * torch.clamp(pred_scores_loss, self.eps) ** self.gamma * torch.log(1. - pred_scores_loss  + self.eps)
-        scores_loss = (pos_loss + neg_loss).sum(-1).permute(0, 2, 1).contiguous()
+        #class_weights = self.class_weights.unsqueeze(0).unsqueeze(0).unsqueeze(0)
+        #pos_loss = - true_scores * torch.exp(class_weights) * torch.clamp(1. - pred_scores_loss, self.eps) ** self.gamma * torch.log(pred_scores_loss + self.eps)
+        #neg_loss = - (1. - true_scores) * torch.exp(1. - class_weights) * torch.clamp(pred_scores_loss, self.eps) ** self.gamma * torch.log(1. - pred_scores_loss  + self.eps)
+        #scores_loss = (pos_loss + neg_loss).sum(-1).permute(0, 2, 1).contiguous()
 
         iou_loss = -torch.log(overlaps + self.eps)
         
@@ -688,8 +691,8 @@ class SimOTA:
         fg_scores_mask = fg_mask[:, :, None].repeat(1, 1, self.nc)
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
-        #pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
-        #target_scores = target_scores * pos_overlaps
+        pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
+        target_scores = target_scores * pos_overlaps
 
         return target_bboxes, target_scores, fg_mask.bool()
 
