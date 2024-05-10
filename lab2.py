@@ -45,4 +45,24 @@ config = build_config()
 
 #print(config['train_class_ratio'][31] + 1)
 
-print(type(config['LOSS']['SIMOTA']['dynamic_k']))
+#print(type(config['LOSS']['SIMOTA']['dynamic_k']))
+
+#config = build_config()
+#state_dict = torch.load(config['pretrain_path'])
+#check_point_dict = {'config' : config, 'state_dict' : state_dict}
+#torch.save(check_point_dict, 'ckpt.pth')
+
+#check_point_dict = torch.load('ckpt.pth')
+#print(check_point_dict['config'])
+
+coconf = build_config()
+import yaml
+import shutil
+
+# Đường dẫn tới file YAML gốc
+source_file = 'config/ava_config.yaml'
+
+# Đường dẫn nơi bạn muốn paste nội dung YAML
+destination_file = 'config.yaml'
+
+shutil.copyfile(source_file, destination_file)

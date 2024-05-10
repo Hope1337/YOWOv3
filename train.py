@@ -27,9 +27,17 @@ from datasets.build_dataset import build_dataset
 from model.TSN.YOLO2Stream import build_yolo2stream
 from utils.loss import build_loss
 from utils.warmup_lr import LinearWarmup
+import shutil
 
 
 def train_model(config):
+
+    # Save config file
+    #######################################################
+    source_file = config['config_path']
+    destination_file = os.path.join(config['save_folder'], 'config.yaml')
+    shutil.copyfile(source_file, destination_file)
+    #######################################################
     
     # create dataloader, model, criterion
     ####################################################

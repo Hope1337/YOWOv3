@@ -46,13 +46,14 @@ LOSS:
     gamma  : 0.5
     radius : 2.5
 
-    dynamic_k     : True 
+    dynamic_k     : False 
     dynamic_top_k : 10
 
     scale_cls_loss : 0.5
     scale_box_loss : 5.0
     scale_dfl_loss : 0.5
 
+config_path       : config/ava_config.yaml
 dataset           : ava
 loss              : simota  
 active_checker    : True
@@ -62,7 +63,7 @@ backbone3D        : resnext101
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : null 
+pretrain_path     : /home/manh/checkpoint/20.21_ava(resnext)/epoch_9.pth
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
 clip_length       : 16
 batch_size        : 8
