@@ -63,7 +63,7 @@ backbone3D        : resnext101
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : /home/manh/checkpoint/20.21_ava(resnext)/epoch_9.pth
+pretrain_path     : null
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
 clip_length       : 16
 batch_size        : 8

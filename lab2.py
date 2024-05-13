@@ -59,10 +59,16 @@ coconf = build_config()
 import yaml
 import shutil
 
-# Đường dẫn tới file YAML gốc
-source_file = 'config/ava_config.yaml'
+model = nn.BatchNorm2d(2)
+biases = []
+not_biases = []
 
-# Đường dẫn nơi bạn muốn paste nội dung YAML
-destination_file = 'config.yaml'
-
-shutil.copyfile(source_file, destination_file)
+for param_name, param in model.named_parameters():
+    if param.requires_grad:
+        if param_name.endswith('bias'):
+            biases.append(param)
+        else:
+            not_biases.append(param)
+            
+print(biases)
+print(not_biases)

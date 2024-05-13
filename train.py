@@ -57,7 +57,22 @@ def train_model(config):
     criterion = build_loss(model, config)
     #####################################################
 
-    optimizer  = optim.AdamW(params=model.parameters(), lr= config['lr'], weight_decay=config['weight_decay'])
+    biases = []
+    not_biases = []
+
+    for param_name, param in model.named_parameters():
+        if param.requires_grad:
+            if param_name.endswith('bias'):
+                biases.append(param)
+            else:
+                not_biases.append(param)
+
+    #optimizer  = optim.AdamW(params=model.parameters(), lr= config['lr'], weight_decay=config['weight_decay'])
+    optimizer = optim.AdamW([
+        {'params': not_biases, 'lr': config['lr']},  # Learning rate for non-bias parameters
+        {'params': biases, 'lr': config['lr'] * 2}  # Double learning rate for bias parameters
+        ], weight_decay=config['weight_decay'])
+    
     warmup_lr  = LinearWarmup(config)
 
     adjustlr_schedule = config['adjustlr_schedule']
