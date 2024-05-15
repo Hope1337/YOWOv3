@@ -48,7 +48,8 @@ def train_model(config):
     
     model = build_yolo2stream(config)
     
-    total_params = round(sum(p.numel() for p in model.paramete
+    total_params = round(sum(p.numel() for p in model.parameters()) // 1e6)
+    print(f"Tổng số lượng tham số: {total_params}")
     #sys.exit()
     model.train()
     model.to("cuda")
