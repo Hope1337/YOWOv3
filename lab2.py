@@ -55,20 +55,30 @@ config = build_config()
 #check_point_dict = torch.load('ckpt.pth')
 #print(check_point_dict['config'])
 
-coconf = build_config()
-import yaml
-import shutil
+config = build_config()
+from datasets.ucf.load_data import UCF_dataset
+from datasets.collate_fn import collate_fn
+from datasets.build_dataset import build_dataset
+from model.TSN.YOLO2Stream import build_yolo2stream
+from utils.loss import build_loss
+model = build_yolo2stream(config)
 
-model = nn.BatchNorm2d(2)
-biases = []
-not_biases = []
-
-for param_name, param in model.named_parameters():
-    if param.requires_grad:
-        if param_name.endswith('bias'):
-            biases.append(param)
+g = [], [], []  # optimizer parameter groups
+bn = tuple(v for k, v in nn.__dict__.items() if "Norm" in k)  # normalization layers, i.e. BatchNorm2d()
+for v in model.modules():
+    for p_name, p in v.named_parameters(recurse=0):
+        if p_name == "bias":  # bias (no decay)
+            g[2].append(p)
+        elif p_name == "weight" and isinstance(v, bn):  # weight (no decay)
+            g[1].append(p)
         else:
-            not_biases.append(param)
-            
-print(biases)
-print(not_biases)
+            g[0].append(p)  # weight (with decay)
+
+optimizer = torch.optim.AdamW(g[0], lr=config['lr'], weight_decay=config['weight_decay'])
+optimizer.add_param_group({"params": g[1], "weight_decay": 0.0})  
+optimizer.add_param_group({"params": g[2], "weight_decay": 0.0}) 
+
+
+for j, y in enumerate(optimizer.param_groups):
+    print(y)
+    time.sleep(10)

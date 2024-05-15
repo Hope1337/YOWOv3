@@ -48,8 +48,7 @@ def train_model(config):
     
     model = build_yolo2stream(config)
     
-    total_params = round(sum(p.numel() for p in model.parameters()) // 1e6)
-    print(f"Tổng số lượng tham số: {total_params}")
+    total_params = round(sum(p.numel() for p in model.paramete
     #sys.exit()
     model.train()
     model.to("cuda")
@@ -57,21 +56,22 @@ def train_model(config):
     criterion = build_loss(model, config)
     #####################################################
 
-    biases = []
-    not_biases = []
-
-    for param_name, param in model.named_parameters():
-        if param.requires_grad:
-            if param_name.endswith('bias'):
-                biases.append(param)
-            else:
-                not_biases.append(param)
-
     #optimizer  = optim.AdamW(params=model.parameters(), lr= config['lr'], weight_decay=config['weight_decay'])
-    optimizer = optim.AdamW([
-        {'params': not_biases, 'lr': config['lr']},  # Learning rate for non-bias parameters
-        {'params': biases, 'lr': config['lr'] * 2}  # Double learning rate for bias parameters
-        ], weight_decay=config['weight_decay'])
+
+    g = [], [], []  # optimizer parameter groups
+    bn = tuple(v for k, v in nn.__dict__.items() if "Norm" in k)  # normalization layers, i.e. BatchNorm2d()
+    for v in model.modules():
+        for p_name, p in v.named_parameters(recurse=0):
+            if p_name == "bias":  # bias (no decay)
+                g[2].append(p)
+            elif p_name == "weight" and isinstance(v, bn):  # weight (no decay)
+                g[1].append(p)
+            else:
+                g[0].append(p)  # weight (with decay)
+
+    optimizer = torch.optim.AdamW(g[0], lr=config['lr'], weight_decay=config['weight_decay'])
+    optimizer.add_param_group({"params": g[1], "weight_decay": 0.0})  
+    optimizer.add_param_group({"params": g[2], "weight_decay": 0.0}) 
     
     warmup_lr  = LinearWarmup(config)
 
