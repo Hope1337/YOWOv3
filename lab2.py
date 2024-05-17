@@ -61,24 +61,11 @@ from datasets.collate_fn import collate_fn
 from datasets.build_dataset import build_dataset
 from model.TSN.YOLO2Stream import build_yolo2stream
 from utils.loss import build_loss
-model = build_yolo2stream(config)
-
-g = [], [], []  # optimizer parameter groups
-bn = tuple(v for k, v in nn.__dict__.items() if "Norm" in k)  # normalization layers, i.e. BatchNorm2d()
-for v in model.modules():
-    for p_name, p in v.named_parameters(recurse=0):
-        if p_name == "bias":  # bias (no decay)
-            g[2].append(p)
-        elif p_name == "weight" and isinstance(v, bn):  # weight (no decay)
-            g[1].append(p)
-        else:
-            g[0].append(p)  # weight (with decay)
-
-optimizer = torch.optim.AdamW(g[0], lr=config['lr'], weight_decay=config['weight_decay'])
-optimizer.add_param_group({"params": g[1], "weight_decay": 0.0})  
-optimizer.add_param_group({"params": g[2], "weight_decay": 0.0}) 
 
 
-for j, y in enumerate(optimizer.param_groups):
-    print(y)
-    time.sleep(10)
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib.colors import ListedColormap
+

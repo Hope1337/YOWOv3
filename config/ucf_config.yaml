@@ -23,6 +23,12 @@ BACKBONE3D:
   I3D:
     PRETRAIN:
       default: weights/backbone3D/I3D/rgb_imagenet.pth
+  
+  RESNEXT:
+    ver : 101
+
+    PRETRAIN:
+      ver_101 : weights/backbone3D/resnext/resnext-101-kinetics.pth
 
 LOSS:
   TAL:
@@ -47,6 +53,7 @@ LOSS:
     scale_box_loss : 7.5
     scale_dfl_loss : 1.5
 
+config_path       : config/ucf_config.yaml
 dataset           : ucf
 loss              : tal
 active_checker    : True
@@ -55,8 +62,8 @@ backbone2D        : yolov8
 backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
-interchannels     : [128, 128, 128]
-pretrain_path     : weights/model_checkpoint/ema_epoch_3.pth
+interchannels     : [256, 256, 256]
+pretrain_path     : /home/manh/checkpoint/88.24_ucf(i3d)/ema_epoch_7.pth
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
 clip_length       : 16
 batch_size        : 8

@@ -104,7 +104,7 @@ def non_max_suppression(prediction, conf_threshold=0.25, iou_threshold=0.45):
 
 # adapted from https://inside-machinelearning.com/en/bounding-boxes-python-function/
 # một chút sửa đổi để phù hợp với mục đích sử dụng
-def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(255, 255, 255)):
+def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(0, 200, 25)):
   """
   :param image : np array [H, W, C] (BGR)
   :param label : text, default = None
@@ -117,14 +117,53 @@ def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(255, 255, 25
     w, h = cv2.getTextSize(label, 0, fontScale=lw / 10, thickness=tf)[0]  # text width, height
     outside = p1[1] - h >= 3
     p2 = p1[0] + w, p1[1] - h - 3 if outside else p1[1] + h + 3
-    cv2.rectangle(image, p1, p2, color, -1, cv2.LINE_AA)  # filled
-    cv2.putText(image,
-                label, (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
+    y0, dy = 0,10
+    y0 = p1[1] - 2 #if outside else p1[1] + h + 2
+    for i, line in enumerate(label.split('\n')):
+        y = y0 + i*dy
+        #cv2.putText(currStack, line, (50, y ), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA, False)
+        cv2.putText(image,
+                line, (p1[0], y),
                 0,
                 lw / 10,
                 txt_color,
                 thickness=tf,
                 lineType=cv2.LINE_AA)
+        #cv2.rectangle(image, p1, (p2[0], y), color, -1, cv2.LINE_AA)  # filled
+    #cv2.rectangle(image, p1, p2, color, -1, cv2.LINE_AA)  # filled
+    #cv2.putText(image,
+                #label, (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
+                #0,
+                #lw / 10,
+                #txt_color,
+                #thickness=tf,
+                #lineType=cv2.LINE_AA)
+    
+def box_iou(box1, box2):
+    # https://github.com/pytorch/vision/blob/master/torchvision/ops/boxes.py
+    """
+    Return intersection-over-union (Jaccard index) of boxes.
+    Both sets of boxes are expected to be in (x1, y1, x2, y2) format.
+    Arguments:
+        box1 (Tensor[N, 4])
+        box2 (Tensor[M, 4])
+    Returns:
+        iou (Tensor[N, M]): the NxM matrix containing the pairwise
+            IoU values for every element in boxes1 and boxes2
+    """
+
+    # intersection(N,M) = (rb(N,M,2) - lt(N,M,2)).clamp(0).prod(2)
+    (a1, a2), (b1, b2) = box1[:, None].chunk(2, 2), box2.chunk(2, 1)
+    intersection = (torch.min(a2, b2) - torch.max(a1, b1)).clamp(0).prod(2)
+
+    # IoU = intersection / (area1 + area2 - intersection)
+    box1 = box1.T
+    box2 = box2.T
+
+    area1 = (box1[2] - box1[0]) * (box1[3] - box1[1])
+    area2 = (box2[2] - box2[0]) * (box2[3] - box2[1])
+
+    return intersection / (area1[:, None] + area2 - intersection)
 
 def draw_bounding_box(image, bboxes, labels, confs, map_labels):
     """
@@ -144,13 +183,59 @@ def draw_bounding_box(image, bboxes, labels, confs, map_labels):
     
     H, W, C = image.shape 
 
+    pre_box   = []
+    meta_data = []
 
     if bboxes is not None:
         for box, label, conf in zip(bboxes, labels, confs):
             box = box.clone().detach()
-            box[0] = max(0, int(box[0]))
-            box[1] = max(0, int(box[1]))
-            box[2] = min(W, int(box[2]))
-            box[3] = min(H, int(box[3]))
+            #box[0] = max(0, int(box[0]))
+            #box[1] = max(0, int(box[1]))
+            #box[2] = min(W, int(box[2]))
+            #box[3] = min(H, int(box[3]))
             text    = str(map_labels[int(label.item())] + " : " + str(round(conf.item()*100, 2)))
-            box_label(image, box, text)
+            #box_label(image, box, text)
+            pre_box.append(box)
+            meta_data.append([text, H, W])
+
+        res_box = []
+        res_meta_data = []
+
+        for idx1, box1 in enumerate(pre_box):
+            flag = 1
+            for idx2, box2 in enumerate(res_box):
+                iou = box_iou(box1.unsqueeze(0), box2.unsqueeze(0))[0, 0]
+                if (iou >= 0.9):
+                    res_meta_data[idx2].append(meta_data[idx1])
+                    flag = 0
+                    break
+            if flag:
+                res_box.append(box1)
+                res_meta_data.append([meta_data[idx1]])
+
+        for box, meta in zip(res_box, res_meta_data):
+            text = ''
+            for sub_meta in meta:
+                if text == '':
+                    text = sub_meta[0]
+                else:
+                    text += '\n' + sub_meta[0]
+
+            H = meta[0][1]
+            W = meta[0][2]
+            
+            bbox = []
+
+            bbox.append(max(0, int(box[0])))
+            bbox.append(max(0, int(box[1])))
+            bbox.append(min(W, int(box[2])))
+            bbox.append(min(H, int(box[3])))
+
+            box_label(image, bbox, text)
+
+
+
+
+
+
+    
