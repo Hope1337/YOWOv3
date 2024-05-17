@@ -104,7 +104,7 @@ def non_max_suppression(prediction, conf_threshold=0.25, iou_threshold=0.45):
 
 # adapted from https://inside-machinelearning.com/en/bounding-boxes-python-function/
 # một chút sửa đổi để phù hợp với mục đích sử dụng
-def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(0, 200, 25)):
+def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(200, 25, 0)):
   """
   :param image : np array [H, W, C] (BGR)
   :param label : text, default = None
@@ -125,7 +125,7 @@ def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(0, 200, 25))
         cv2.putText(image,
                 line, (p1[0], y),
                 0,
-                lw / 10,
+                lw / 5,
                 txt_color,
                 thickness=tf,
                 lineType=cv2.LINE_AA)
@@ -226,10 +226,10 @@ def draw_bounding_box(image, bboxes, labels, confs, map_labels):
             
             bbox = []
 
-            bbox.append(max(0, int(box[0])))
-            bbox.append(max(0, int(box[1])))
-            bbox.append(min(W, int(box[2])))
-            bbox.append(min(H, int(box[3])))
+            bbox.append(int(max(0, box[0]) / 224 * 512))
+            bbox.append(int(max(0, box[1]) / 224 * 512))
+            bbox.append(int(min(W, box[2]) / 224 * 512))
+            bbox.append(int(min(H, box[3]) / 224 * 512))
 
             box_label(image, bbox, text)
 

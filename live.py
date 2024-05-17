@@ -42,11 +42,11 @@ class live_transform():
         pass
 
     def to_tensor(self, image):
-        return F.to_tensor(image)
+        return FT.to_tensor(image)
     
     def normalize(self, clip, mean=[0.4345, 0.4051, 0.3775], std=[0.2768, 0.2713, 0.2737]):
-        mean  = torch.FloatTensor([0.485, 0.456, 0.406])
-        std   = torch.FloatTensor([0.229, 0.224, 0.225])
+        mean  = torch.FloatTensor([0.485, 0.456, 0.406]).view(-1, 1, 1)
+        std   = torch.FloatTensor([0.229, 0.224, 0.225]).view(-1, 1, 1)
         clip -= mean
         clip /= std
         return clip
@@ -70,6 +70,7 @@ def detect(config):
     cap = cv2.VideoCapture(0) 
 
     frame_list = []
+    transform = live_transform()
 
     while True:
     # Đọc frame ảnh từ camera
@@ -79,26 +80,30 @@ def detect(config):
         #print(bboxes)
 
         origin_image = Image.fromarray(frame)
-        frame_list.append(live_transform(origin_image))
+        frame_list.append(transform(origin_image))
         if (len(frame_list) > 16):
             frame_list.pop(0)
-        if (len(frame_list < 16)):
+        if (len(frame_list) < 16):
             continue
 
-        clip = torch.stack(frame_list, 0)
+        clip = torch.stack(frame_list, 0).permute(1, 0, 2, 3).contiguous()
 
         clip = clip.unsqueeze(0).to("cuda")
         outputs = model(clip)
-        outputs = non_max_suppression(outputs, conf_threshold=0.3, iou_threshold=0.5)[0]
+        outputs = non_max_suppression(outputs, conf_threshold=0.5, iou_threshold=0.5)[0]
 
-        origin_image = cv2.resize(origin_image, (224, 224))
+        origin_image = frame
+        origin_image = cv2.resize(origin_image, (512, 512))
 
         draw_bounding_box(origin_image, outputs[:, :4], outputs[:, 5], outputs[:, 4], mapping)
 
+        #origin_image = cv2.resize(origin_image, (512, 512))
 
         cv2.imshow('img', origin_image)
-        k = cv2.waitKey()
+        k = cv2.waitKey(1)
         if k == ord('q'):
+            break
+         
 
 if __name__ == "__main__":
     config = build_config()
