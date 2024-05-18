@@ -59,11 +59,11 @@ loss              : simota
 active_checker    : True
 num_classes       : 80
 backbone2D        : yolov8
-backbone3D        : i3d
+backbone3D        : shufflenetv2
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : C:\Users\eguit\Documents\ema_epoch_9 (1).pth
+pretrain_path     : null
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
 clip_length       : 16
 batch_size        : 8

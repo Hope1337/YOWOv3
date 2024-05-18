@@ -59,11 +59,11 @@ loss              : tal
 active_checker    : True
 num_classes       : 24
 backbone2D        : yolov8
-backbone3D        : i3d
+backbone3D        : shufflenetv2
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : /home/manh/checkpoint/88.24_ucf(i3d)/ema_epoch_7.pth
+pretrain_path     : null 
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
 clip_length       : 16
 batch_size        : 8
