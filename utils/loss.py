@@ -106,10 +106,12 @@ class TAL:
 
         target_bboxes /= stride_tensor
         target_scores_sum = target_scores.sum()
+        #num_pos = fg_mask.sum()
 
         # cls loss
         loss_cls = self.bce(pred_scores, target_scores.to(pred_scores.dtype))
         loss_cls = loss_cls.sum() / target_scores_sum
+        #loss_cls = loss_cls.sum() / num_pos
 
         # box loss
         loss_box = torch.zeros(1, device=self.device)
@@ -119,12 +121,14 @@ class TAL:
             weight = torch.masked_select(target_scores.sum(-1), fg_mask).unsqueeze(-1)
             loss_box = self.iou(pred_bboxes[fg_mask], target_bboxes[fg_mask])
             loss_box = ((1.0 - loss_box) * weight).sum() / target_scores_sum
+            #loss_box = (1.0 - loss_box).sum() / num_pos
             # DFL loss
             a, b = torch.split(target_bboxes, 2, -1)
             target_lt_rb = torch.cat((anchor_points - a, b - anchor_points), -1)
             target_lt_rb = target_lt_rb.clamp(0, self.dfl_ch - 1.01)  # distance (left_top, right_bottom)
             loss_dfl = self.df_loss(pred_output[fg_mask].view(-1, self.dfl_ch), target_lt_rb[fg_mask])
             loss_dfl = (loss_dfl * weight).sum() / target_scores_sum
+            #loss_dfl = loss_dfl.sum() / num_pos
 
 
         loss_cls *= self.scale_cls_loss
@@ -291,6 +295,8 @@ class TAL:
         norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
         norm_align_metric = norm_align_metric.unsqueeze(-1)
         target_scores = target_scores * norm_align_metric 
+        #pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
+        #target_scores = target_scores * pos_overlaps
 
         return target_bboxes, target_scores, fg_mask.bool()
 
@@ -356,6 +362,7 @@ class SimOTA:
         # task aligned assigner
         self.top_k          = config['LOSS']['SIMOTA']['top_k']
         self.radius         = config['LOSS']['SIMOTA']['radius']
+        self.mode           = config['LOSS']['SIMOTA']['mode']
         self.scale_cls_loss = config['LOSS']['SIMOTA']['scale_cls_loss']
         self.scale_box_loss = config['LOSS']['SIMOTA']['scale_box_loss']
         self.scale_dfl_loss = config['LOSS']['SIMOTA']['scale_dfl_loss']
@@ -364,12 +371,13 @@ class SimOTA:
         self.dynamic_top_k  = config['LOSS']['SIMOTA']['dynamic_top_k']
         self.eps            = 1e-9
 
-        ratio_dict = config['class_ratio']
-        self.class_weights = torch.zeros(len(list(ratio_dict.keys())))
-        for x in ratio_dict.keys():
-            self.class_weights[x] = 1.0 - ratio_dict[x]
+        if self.mode == 'unbalance':
+            ratio_dict = config['class_ratio']
+            self.class_weights = torch.zeros(len(list(ratio_dict.keys())))
+            for x in ratio_dict.keys():
+                self.class_weights[x] = 1.0 - ratio_dict[x]
 
-        self.class_weights = self.class_weights.to('cuda')
+            self.class_weights = self.class_weights.to('cuda')
 
         self.bs = 1
         self.num_max_boxes = 0
@@ -453,14 +461,19 @@ class SimOTA:
         pos_scores = pred_scores[fg_mask][mask].sigmoid()
         neg_scores = torch.cat((pred_scores[fg_mask][~mask], pred_scores[~fg_mask].view(-1)), dim=0).sigmoid()
 
-        pos_weight  = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[mask]
+        if self.mode == 'unbalance':
+            pos_weight  = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[mask]
 
-        neg_weight1 = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[~mask]  
-        neg_weight2 = self.class_weights.unsqueeze(0).repeat([pred_scores[~fg_mask].shape[0], 1]).view(-1)
-        neg_weight  = torch.cat((neg_weight1, neg_weight2))
+            neg_weight1 = self.class_weights.unsqueeze(0).repeat([mask.shape[0], 1])[~mask]  
+            neg_weight2 = self.class_weights.unsqueeze(0).repeat([pred_scores[~fg_mask].shape[0], 1]).view(-1)
+            neg_weight  = torch.cat((neg_weight1, neg_weight2))
 
-        pos_weight = torch.exp(pos_weight)
-        neg_weight = torch.exp(1.0 - neg_weight)
+            pos_weight = torch.exp(pos_weight)
+            neg_weight = torch.exp(1.0 - neg_weight)
+
+        elif self.mode == 'balance':
+            pos_weight = 1.0
+            neg_weight = 1.0
 
         gamma = self.gamma
             
