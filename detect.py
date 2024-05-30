@@ -46,14 +46,14 @@ def detect(config):
         outputs = model(clip)
         outputs = non_max_suppression(outputs, conf_threshold=0.3, iou_threshold=0.5)[0]
 
-        origin_image = cv2.resize(origin_image, (224, 224))
+        origin_image = cv2.resize(origin_image, (512, 512))
 
         draw_bounding_box(origin_image, outputs[:, :4], outputs[:, 5], outputs[:, 4], mapping)
 
         flag = 1 
         if flag:
             cv2.imshow('img', origin_image)
-            k = cv2.waitKey()
+            k = cv2.waitKey(1)
             if k == ord('q'):
                 return
         else:

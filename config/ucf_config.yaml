@@ -97,7 +97,7 @@ num_classes       : 24
 backbone2D        : yolov8
 backbone3D        : i3d
 fusion_module     : CFAM
-mode              : coupled
+mode              : decoupled
 interchannels     : [256, 256, 256]
 pretrain_path     : null
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
