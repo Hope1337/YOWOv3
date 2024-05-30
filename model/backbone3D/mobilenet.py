@@ -32,7 +32,7 @@ class Block(nn.Module):
 
 
 class MobileNet(nn.Module):
-    def __init__(self, width_mult=1.):
+    def __init__(self, width_mult=1., pretrain_path=None):
         super(MobileNet, self).__init__()
 
         input_channel = 32
@@ -59,6 +59,7 @@ class MobileNet(nn.Module):
         # make it nn.Sequential
         self.features = nn.Sequential(*self.features)
         self.avgpool = nn.AvgPool3d((2, 1, 1), stride=1)
+        self.pretrain_path = pretrain_path
 
     def forward(self, x):
         x = self.features(x)
@@ -67,6 +68,23 @@ class MobileNet(nn.Module):
             x = self.avgpool(x)
         
         return x
+    
+    def load_pretrain(self):
+        
+        state_dict = self.state_dict()
+
+        pretrain_state_dict = torch.load(self.pretrain_path)
+
+        for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
+            
+            if param_name not in state_dict:
+                continue
+            state_dict[param_name] = value
+            
+        self.load_state_dict(state_dict)
+
+        print("backbone3D : mobilenet pretrained loaded!")
 
 
 def get_fine_tuning_parameters(model, ft_portion):
@@ -98,7 +116,21 @@ def get_model(**kwargs):
     model = MobileNet(**kwargs)
     return model
 
+def build_mobilenet(config):
+    width_mult = config['BACKBONE3D']['MOBILENET']['width_mult']
+    assert width_mult in [0.5, 1.0, 1.5, 2.0], "wrong width_mult of mobilenet!"
+    pretrain_dict = config['BACKBONE3D']['MOBILENET']['PRETRAIN']
+            
+    if width_mult == 0.5:
+        pretrain_path = pretrain_dict['width_mult_0.5x']
+    elif width_mult == 1.0:
+        pretrain_path = pretrain_dict['width_mult_1.0x']
+    elif width_mult == 1.5:
+        pretrain_path = pretrain_dict['width_mult_1.5x']
+    elif width_mult == 2.0:
+        pretrain_path = pretrain_dict['width_mult_2.0x']
 
+    return MobileNet(width_mult=width_mult, pretrain_path=pretrain_path)
 
 if __name__ == '__main__':
     model = get_model(width_mult=1.)

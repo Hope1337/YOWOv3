@@ -69,13 +69,13 @@ class YOLO2Stream(torch.nn.Module):
         out_channels_2D = [x.shape[1] for x in out_2D]
         out_channels_3D = out_3D.shape[1]
 
-        self.decoupled_head = DecoupleHead(self.inter_channels_decoupled, 
-                                           out_channels_2D)
+        if self.mode == 'decoupled':
+            self.decoupled_head = DecoupleHead(self.inter_channels_decoupled, out_channels_2D)
+            # [[box, cls], [box, cls], [box, cls]]
+            out_2D = self.decoupled_head(out_2D)
+            out_channels_2D = [[x[0].shape[1], x[1].shape[1]] for x in out_2D]    
 
-        # [[box, cls], [box, cls], [box, cls]]
-        out_2D = self.decoupled_head(out_2D)
 
-        out_channels_2D = [[x[0].shape[1], x[1].shape[1]] for x in out_2D]                
         self.fusion = CFAMFusion(out_channels_2D, 
                                  out_channels_3D, 
                                  self.inter_channels_fusion, 
@@ -102,7 +102,8 @@ class YOLO2Stream(torch.nn.Module):
         ft_2D = self.net2D(key_frames)
         ft_3D = self.net3D(clips).squeeze(2)
         
-        ft_2D = self.decoupled_head(ft_2D)
+        if self.mode == 'decoupled':
+            ft_2D = self.decoupled_head(ft_2D)
 
         ft = self.fusion(ft_2D, ft_3D)
 
@@ -126,11 +127,12 @@ class YOLO2Stream(torch.nn.Module):
         Initialize convolution parameters.
         """
 
-        for c in self.decoupled_head.modules():
-            if isinstance(c, nn.Conv2d):
-                nn.init.kaiming_normal_(c.weight)
-                if c.bias is not None:
-                    nn.init.constant_(c.bias, 0.)
+        if self.mode == 'decoupled':
+            for c in self.decoupled_head.modules():
+                if isinstance(c, nn.Conv2d):
+                    nn.init.kaiming_normal_(c.weight)
+                    if c.bias is not None:
+                        nn.init.constant_(c.bias, 0.)
 
         for c in self.fusion.modules():
             if isinstance(c, nn.Conv2d):

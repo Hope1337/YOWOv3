@@ -68,7 +68,7 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, width_mult=1.):
+    def __init__(self, width_mult=1., pretrain_path=None):
         super(MobileNetV2, self).__init__()
         block = InvertedResidual
         input_channel = 32
@@ -102,6 +102,7 @@ class MobileNetV2(nn.Module):
         self.avgpool = nn.AvgPool3d((2, 1, 1), stride=1)
 
         self._initialize_weights()
+        self.pretrain_path = pretrain_path
 
     def forward(self, x):
         x = self.features(x)
@@ -126,17 +127,22 @@ class MobileNetV2(nn.Module):
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
 
-    def load_pretrain(self, pretrain_path='/home/manh/Projects/YOLO2Stream/weights/backbone3D/kinetics_mobilenetv2_1.0x_RGB_16_best.pth'):
+    def load_pretrain(self):
         
         state_dict = self.state_dict()
 
-        pretrain_state_dict = torch.load(pretrain_path)
+        pretrain_state_dict = torch.load(self.pretrain_path)
+
         for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
+            
             if param_name not in state_dict:
                 continue
             state_dict[param_name] = value
             
         self.load_state_dict(state_dict)
+
+        print("backbone3D : mobilenetv2 pretrained loaded!")
 
 
 def get_fine_tuning_parameters(model, ft_portion):
@@ -167,6 +173,22 @@ def get_model(**kwargs):
     """
     model = MobileNetV2(**kwargs)
     return model
+
+def build_mobilenetv2(config):
+    width_mult = config['BACKBONE3D']['MOBILENETv2']['width_mult']
+    assert width_mult in [0.2, 0.45, 0.7, 1.0], "wrong width_mult of mobilenetv2!"
+    pretrain_dict = config['BACKBONE3D']['MOBILENETv2']['PRETRAIN']
+            
+    if width_mult == 0.2:
+        pretrain_path = pretrain_dict['width_mult_0.2x']
+    elif width_mult == 0.45:
+        pretrain_path = pretrain_dict['width_mult_0.45x']
+    elif width_mult == 0.7:
+        pretrain_path = pretrain_dict['width_mult_0.7x']
+    elif width_mult == 1.0:
+        pretrain_path = pretrain_dict['width_mult_1.0x']
+
+    return MobileNetV2(width_mult=width_mult, pretrain_path=pretrain_path)
 
 
 if __name__ == "__main__":

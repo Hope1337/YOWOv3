@@ -111,6 +111,7 @@ class ResNet(nn.Module):
     def __init__(self,
                  block,
                  layers,
+                 pretrain_path=None,
                  shortcut_type='B'):
         self.inplanes = 64
         super(ResNet, self).__init__()
@@ -139,6 +140,8 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm3d):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
+
+        self.pretrain_path = pretrain_path
 
     def _make_layer(self, block, planes, blocks, shortcut_type, stride=1):
         downsample = None
@@ -180,6 +183,23 @@ class ResNet(nn.Module):
             x = self.avgpool(x)
 
         return x
+    
+    def load_pretrain(self):
+        
+        state_dict = self.state_dict()
+
+        pretrain_state_dict = torch.load(self.pretrain_path)
+
+        for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
+            
+            if param_name not in state_dict:
+                continue
+            state_dict[param_name] = value
+            
+        self.load_state_dict(state_dict)
+
+        print("backbone3D : resnet pretrained loaded!")
 
 
 def get_fine_tuning_parameters(model, ft_portion):
@@ -211,10 +231,10 @@ def resnet10(**kwargs):
     return model
 
 
-def resnet18(**kwargs):
+def resnet18(pretrain_path):
     """Constructs a ResNet-18 model.
     """
-    model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], pretrain_path)
     return model
 
 
@@ -225,17 +245,17 @@ def resnet34(**kwargs):
     return model
 
 
-def resnet50(**kwargs):
+def resnet50(pretrain_path):
     """Constructs a ResNet-50 model.
     """
-    model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
+    model = ResNet(Bottleneck, [3, 4, 6, 3], pretrain_path)
     return model
 
 
-def resnet101(**kwargs):
+def resnet101(pretrain_path):
     """Constructs a ResNet-101 model.
     """
-    model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
+    model = ResNet(Bottleneck, [3, 4, 23, 3], pretrain_path)
     return model
 
 
@@ -251,3 +271,17 @@ def resnet200(**kwargs):
     """
     model = ResNet(Bottleneck, [3, 24, 36, 3], **kwargs)
     return model
+
+def build_resnet(config):
+    ver = config['BACKBONE3D']['RESNET']['ver']
+    assert ver in [101, 50, 18], "wrong ver of resnet!"
+            
+    if ver == 101:
+        pretrain_path = config['BACKBONE3D']['RESNET']['PRETRAIN']['ver_101']
+        return resnet101(pretrain_path)
+    elif ver == 50:
+        pretrain_path = config['BACKBONE3D']['RESNET']['PRETRAIN']['ver_50']
+        return resnet50(pretrain_path)
+    elif ver == 18:
+        pretrain_path = config['BACKBONE3D']['RESNET']['PRETRAIN']['ver_18']
+        return resnet18(pretrain_path)

@@ -70,6 +70,7 @@ class Bottleneck(nn.Module):
 class ShuffleNet(nn.Module):
     def __init__(self,
                  groups,
+                 pretrain_path=None,
                  width_mult=1,
                  num_classes=400):
         super(ShuffleNet, self).__init__()
@@ -102,6 +103,8 @@ class ShuffleNet(nn.Module):
         self.layer3  = self._make_layer(out_planes[3], num_blocks[2], self.groups)
         self.avgpool = nn.AvgPool3d((2, 1, 1), stride=1)
 
+        self.pretrain_path = pretrain_path
+
     def _make_layer(self, out_planes, num_blocks, groups):
         layers = []
         for i in range(num_blocks):
@@ -121,6 +124,23 @@ class ShuffleNet(nn.Module):
             out = self.avgpool(out)
 
         return out
+    
+    def load_pretrain(self):
+        
+        state_dict = self.state_dict()
+
+        pretrain_state_dict = torch.load(self.pretrain_path)
+
+        for param_name, value in pretrain_state_dict['state_dict'].items():
+            param_name = param_name.split('.', 1)[1] # param_name has 'module' at first!
+            
+            if param_name not in state_dict:
+                continue
+            state_dict[param_name] = value
+            
+        self.load_state_dict(state_dict)
+
+        print("backbone3D : shufflenet pretrained loaded!")
 
 def get_fine_tuning_parameters(model, ft_portion):
     if ft_portion == "complete":
@@ -143,7 +163,6 @@ def get_fine_tuning_parameters(model, ft_portion):
     else:
         raise ValueError("Unsupported ft_portion: 'complete' or 'last_layer' expected")
 
-
 def get_model(**kwargs):
     """
     Returns the model.
@@ -151,6 +170,23 @@ def get_model(**kwargs):
     model = ShuffleNet(**kwargs)
     return model
 
+def build_shufflenet(config):
+    width_mult = config['BACKBONE3D']['SHUFFLENET']['width_mult']
+    assert width_mult in [0.25, 0.5, 1.0, 1.5, 2.0], "wrong width_mult of shufflenet!"
+    pretrain_dict = config['BACKBONE3D']['SHUFFLENET']['PRETRAIN']
+            
+    if width_mult == 0.25:
+        pretrain_path = pretrain_dict['width_mult_0.25x']
+    elif width_mult == 0.5:
+        pretrain_path = pretrain_dict['width_mult_0.5x']
+    elif width_mult == 1.0:
+        pretrain_path = pretrain_dict['width_mult_1.0x']
+    elif width_mult == 1.5:
+        pretrain_path = pretrain_dict['width_mult_1.5x']
+    elif width_mult == 2.0:
+        pretrain_path = pretrain_dict['width_mult_2.0x']
+
+    return ShuffleNet(width_mult=width_mult, groups=3, pretrain_path=pretrain_path)
 
 if __name__ == "__main__":
     model = get_model(groups=3, num_classes=600, width_mult=1)

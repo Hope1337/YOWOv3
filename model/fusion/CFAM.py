@@ -72,7 +72,7 @@ class CFAMFusion(nn.Module):
         if mode == 'coupled':
             layers = []
             for channels2D in channels_2D:
-                layers.appned(CFAMBlock(channels2D + channels_3D, interchannels))
+                layers.append(CFAMBlock(channels2D + channels_3D, interchannels))
             self.fusion = nn.ModuleList(layers)
         elif mode == 'decoupled':
             box = []
@@ -97,7 +97,7 @@ class CFAMFusion(nn.Module):
                 upsampling = nn.Upsample(scale_factor=H_2D/H_3D)
                 ft_3D_t = upsampling(ft_3D)
                 ft = torch.cat((ft2D, ft_3D_t), dim = 1)
-                fts.append(self.fusion(ft))
+                fts.append(self.fusion[idx](ft))
 
         elif self.mode == 'decoupled':
             for idx, ft2D in enumerate(ft_2D):
