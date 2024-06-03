@@ -57,3 +57,15 @@ Note: The **Medium-1**, **Medium-2**, and **Large** models correspond to the 3D 
 
 Some notes:
 - In the commit history, there are commits named after the best checkpoints. The code in that commit is what I used to train the model, but it's not the config file! This is because during the training process, I opened another terminal window to experiment with a few things, so the config file changed and I didn't revert it back to the original. The original configs are saved in my notes, not in the commit files.
+
+
+## References
+
+I would like to express my sincere gratitude to the following amazing repositories/codes, which were the primary sources I heavily relied on during the development of this project:
+
+- [A neat implementation of YOLOv8 using PyTorch](https://github.com/jahongir7174/YOLOv8-pt)
+- [3D CNN backbones: MobileNet/v2, ShuffleNet/v2, ResNet, ResNeXt](https://github.com/okankop/Efficient-3DCNNs)
+- [Implementation of the I3D model on PyTorch](https://github.com/piergiaj/pytorch-i3d)
+- [YOWO model](https://github.com/wei-tim/YOWO?tab=readme-ov-file)
+- [YOWOv2 model](https://github.com/yjh0410/YOWOv2)
+- [AVAv2.2 evaluation code from the organizers](https://github.com/activitynet/ActivityNet/tree/master/Evaluation)
