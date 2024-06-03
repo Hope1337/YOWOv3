@@ -31,6 +31,9 @@ def build_config(config_file='config/ucf_config.yaml'):
 - Follow the instructions at: https://github.com/yjh0410/AVA_Dataset.
 - If you find that video downloading takes too long, you can consider downloading them from my Hugging Face repository and then proceed with the remaining steps as instructed above: https://huggingface.co/datasets/manh6054/avav2.2_train_set/tree/main.
 ### Detect on UCF101-24 and AVAv2.2 dataset
+
+*Currently, the displayed bounding boxes and labels are not very visually appealing. I will improve them in the near future.*
+
 - Specify which config file will be read (as mentioned above).
 - Download the checkpoint for AVAv2.2 (**Medium-2 model**, checkpoint file name: ema_epoch_7_88.24_mAP.pth) from: https://huggingface.co/manh6054/Project_VU/tree/main.
 - Download the checkpoint for UCF101-24 (**Medium-2 model**, checkpoint file name: ema_epoch_9.pth) from: https://huggingface.co/manh6054/Project_VU/tree/main.
