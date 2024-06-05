@@ -64,7 +64,7 @@ Some notes:
 
 ## References
 
-I would like to express my sincere gratitude to the following amazing repositories/codes, which were the primary sources I heavily relied on during the development of this project:
+I would like to express my sincere gratitude to the following amazing repositories/codes, which were the primary sources I heavily relied on and borrowed code from during the development of this project:
 
 - [A neat implementation of YOLOv8 using PyTorch](https://github.com/jahongir7174/YOLOv8-pt)
 - [3D CNN backbones: MobileNet/v2, ShuffleNet/v2, ResNet, ResNeXt](https://github.com/okankop/Efficient-3DCNNs)
