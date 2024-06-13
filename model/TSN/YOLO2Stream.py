@@ -143,6 +143,8 @@ class YOLO2Stream(torch.nn.Module):
         for c in self.detection_head.modules():
             if isinstance(c, nn.Conv2d) and c is not self.detection_head.dfl.conv:
                 nn.init.kaiming_normal_(c.weight)
+                if c.bias is not None:
+                    nn.init.constant_(c.bias, 0.)
 
         for m in self.modules():
             if isinstance(m, nn.BatchNorm2d):

@@ -10,8 +10,8 @@ from datasets.ucf.transforms import Augmentation, UCF_transform
 from PIL import Image
 import csv
             
-path = 'weights/v8_n.pt'
 
-state = torch.load(path)
-keys = list(state.keys())
-print(keys)
+a = torch.tensor([[1, 2, 3], [4, 5, 6]])
+print(a.shape)
+a = torch.where(a > 3)
+print(a)

@@ -289,12 +289,12 @@ class TAL:
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
         # normalize
-        align_metric *= mask_pos
-        pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
-        pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
-        norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
-        norm_align_metric = norm_align_metric.unsqueeze(-1)
-        target_scores = target_scores * norm_align_metric 
+        #align_metric *= mask_pos
+        #pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
+        #pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
+        #norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
+        #norm_align_metric = norm_align_metric.unsqueeze(-1)
+        #target_scores = target_scores * norm_align_metric 
         #pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
         #target_scores = target_scores * pos_overlaps
 

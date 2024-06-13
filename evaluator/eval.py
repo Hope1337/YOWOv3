@@ -65,7 +65,7 @@ def compute_ap(tp, conf, pred_cls, target_cls, eps=1e-16):
             m_pre = numpy.flip(numpy.maximum.accumulate(numpy.flip(m_pre)))
 
             # Integrate area under curve
-            x = numpy.linspace(0, 1, 101)  # 101-point interp (COCO)
+            #x = numpy.linspace(0, 1, 101)  # 101-point interp (COCO)
             #ap[ci, j] = numpy.trapz(numpy.interp(x, m_rec, m_pre), x)  # integrate
             ap[ci, j] = numpy.trapz(m_pre, m_rec)  # integrate
 

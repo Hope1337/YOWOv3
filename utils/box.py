@@ -58,7 +58,7 @@ def non_max_suppression(prediction, conf_threshold=0.25, iou_threshold=0.45):
 
     # Settings
     max_wh = 7680  # (pixels) maximum box width and height
-    max_det = 40  # the maximum number of boxes to keep after NMS
+    max_det = 300  # the maximum number of boxes to keep after NMS
     max_nms = 30000  # maximum number of boxes into torchvision.ops.nms()
 
     start = time.time()

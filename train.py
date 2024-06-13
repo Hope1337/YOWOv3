@@ -44,7 +44,7 @@ def train_model(config):
     dataset = build_dataset(config, phase='train')
     
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
-                                 , num_workers=config['num_workers'], pin_memory=True, drop_last=True)
+                                 , num_workers=config['num_workers'], pin_memory=True)
     
     model = build_yolo2stream(config)
     
@@ -118,7 +118,7 @@ def train_model(config):
             #plot_grad_flow(model.named_parameters()) #model too large, can't see anything!
             #plt.show()
 
-            if ((iteration + 1) % acc_grad == 0) or (iteration + 1 == len(dataloader)):
+            if (iteration + 1) % acc_grad == 0:
                 cnt_pram_update = cnt_pram_update + 1
                 if cur_epoch == 1:
                     warmup_lr(optimizer, cnt_pram_update)

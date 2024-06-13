@@ -111,7 +111,7 @@ def eval(config):
                         matches = torch.cat((torch.stack(x, 1), iou[x[0], x[1]][:, None]), 1)
                         matches = matches.cpu().numpy()
                         if x[0].shape[0] > 1:
-                            #matches = matches[matches[:, 2].argsort()[::-1]]
+                            matches = matches[matches[:, 2].argsort()[::-1]]
                             matches = matches[np.unique(matches[:, 1], return_index=True)[1]]
                             matches = matches[np.unique(matches[:, 0], return_index=True)[1]]
                         correct[matches[:, 1].astype(int), j] = True
