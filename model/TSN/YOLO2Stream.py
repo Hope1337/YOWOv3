@@ -127,24 +127,24 @@ class YOLO2Stream(torch.nn.Module):
         Initialize convolution parameters.
         """
 
-        if self.mode == 'decoupled':
-            for c in self.decoupled_head.modules():
-                if isinstance(c, nn.Conv2d):
-                    nn.init.kaiming_normal_(c.weight)
-                    if c.bias is not None:
-                        nn.init.constant_(c.bias, 0.)
+        #if self.mode == 'decoupled':
+            #for c in self.decoupled_head.modules():
+                #if isinstance(c, nn.Conv2d):
+                    #nn.init.kaiming_normal_(c.weight)
+                    #if c.bias is not None:
+                        #nn.init.constant_(c.bias, 0.)
 
-        for c in self.fusion.modules():
-            if isinstance(c, nn.Conv2d):
-                nn.init.kaiming_normal_(c.weight)
-                if c.bias is not None:
-                    nn.init.constant_(c.bias, 0.)
+        #for c in self.fusion.modules():
+            #if isinstance(c, nn.Conv2d):
+                #nn.init.kaiming_normal_(c.weight)
+                #if c.bias is not None:
+                    #nn.init.constant_(c.bias, 0.)
 
-        for c in self.detection_head.modules():
-            if isinstance(c, nn.Conv2d) and c is not self.detection_head.dfl.conv:
-                nn.init.kaiming_normal_(c.weight)
-                if c.bias is not None:
-                    nn.init.constant_(c.bias, 0.)
+        #for c in self.detection_head.modules():
+            #if isinstance(c, nn.Conv2d) and c is not self.detection_head.dfl.conv:
+                #nn.init.kaiming_normal_(c.weight)
+                #if c.bias is not None:
+                    #nn.init.constant_(c.bias, 0.)
 
         for m in self.modules():
             if isinstance(m, nn.BatchNorm2d):
