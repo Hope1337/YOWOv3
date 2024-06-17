@@ -124,7 +124,7 @@ def eval(config):
         tp, fp, m_pre, m_rec, map50, mean_ap = compute_ap(*metrics)
 
     # Print results
-    print('%10.3g' * 3 % (m_pre, m_rec, mean_ap))
+    print('%10.3g' * 3 % (m_pre, m_rec, mean_ap), flush=True)
 
     # Return results
     model.float()  # for training
@@ -134,8 +134,8 @@ def eval(config):
 if __name__ == "__main__":
     config = build_config()
     map50, mean_ap = eval(config)
-    print(map50)
-    print()
-    print("=================================================================")
-    print()
-    print(mean_ap)
+    print(map50, flush=True)
+    print(flush=True)
+    print("=================================================================", flush=True)
+    print(flush=True)
+    print(mean_ap, flush=True)

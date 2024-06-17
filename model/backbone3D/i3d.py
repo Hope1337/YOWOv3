@@ -339,7 +339,7 @@ class InceptionI3d(nn.Module):
             
         self.load_state_dict(state_dict)
 
-        print("backbone3D : i3d pretrained loaded!")
+        print("backbone3D : i3d pretrained loaded!", flush=True)
 
 def build_i3d(config):
     pretrain_path = config['BACKBONE3D']['I3D']['PRETRAIN']['default']

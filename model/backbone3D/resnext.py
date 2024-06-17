@@ -196,7 +196,7 @@ class ResNeXt(nn.Module):
             
         self.load_state_dict(state_dict)
 
-        print("backbone3D : resnext pretrained loaded!")
+        print("backbone3D : resnext pretrained loaded!", flush=True)
 
 
 def resnext50(**kwargs):

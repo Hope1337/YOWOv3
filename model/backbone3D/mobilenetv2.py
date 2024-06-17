@@ -142,7 +142,7 @@ class MobileNetV2(nn.Module):
             
         self.load_state_dict(state_dict)
 
-        print("backbone3D : mobilenetv2 pretrained loaded!")
+        print("backbone3D : mobilenetv2 pretrained loaded!", flush=True)
 
 
 def get_fine_tuning_parameters(model, ft_portion):

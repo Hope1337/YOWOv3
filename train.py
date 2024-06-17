@@ -49,7 +49,7 @@ def train_model(config):
     model = build_yolo2stream(config)
     
     total_params = round(sum(p.numel() for p in model.parameters()) // 1e6)
-    print(f"Tổng số lượng tham số: {total_params}")
+    print(f"Tổng số lượng tham số: {total_params}", flush=True)
     #sys.exit()
     model.train()
     model.to("cuda")
@@ -127,7 +127,7 @@ def train_model(config):
                 optimizer.zero_grad()
                 ema.update(model)
 
-                print("epoch : {}, update : {}, time = {}, loss = {}".format(cur_epoch,  cnt_pram_update, round(time.time() - t_batch, 2), loss_acc))
+                print("epoch : {}, update : {}, time = {}, loss = {}".format(cur_epoch,  cnt_pram_update, round(time.time() - t_batch, 2), loss_acc), flush=True)
                 loss_acc = 0.0
                 #if cnt_pram_update % 500 == 0:
                     #torch.save(model.state_dict(), r"/home/manh/Projects/My-YOWO/weights/model_checkpoint/epch_{}_update_".format(cur_epoch) + str(cnt_pram_update) + ".pth")
@@ -143,7 +143,7 @@ def train_model(config):
         save_path     = os.path.join(save_folder, "epoch_"     + str(cur_epoch) + ".pth")
         torch.save(model.state_dict(), save_path)
 
-        print("Saved model at epoch : {}".format(cur_epoch))
+        print("Saved model at epoch : {}".format(cur_epoch), flush=True)
 
         #log_path = '/home/manh/Projects/YOLO2Stream/training.log'
         #map50, mean_ap = call_eval(save_path)

@@ -99,7 +99,7 @@ backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : null
+pretrain_path     : weights/model_checkpoint/ema_epoch_7.pth
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
 clip_length       : 16
 batch_size        : 8

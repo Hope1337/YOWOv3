@@ -163,8 +163,8 @@ class YOLO(torch.nn.Module):
             
         self.load_state_dict(state_dict)
 
-        print("backbone2D : YOLOv8 pretrained loaded!")
-
+        print("backbone2D : YOLOv8 pretrained loaded!", flush=True)
+        
 
 #def yolo_v8_n(pretrain_path=config['pretrain_yolov8_n']):
     #depth = [1, 2, 2]
