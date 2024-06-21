@@ -46,7 +46,7 @@ class DecoupleHead(torch.nn.Module):
         return out
 
 class YOLO2Stream(torch.nn.Module):
-    def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, pretrain_path=None):
+    def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path=None):
         super().__init__()
         assert mode in ['coupled', 'decoupled']
         self.mode = mode
@@ -58,8 +58,8 @@ class YOLO2Stream(torch.nn.Module):
         self.net2D = backbone2D
         self.net3D = backbone3D
 
-        dummy_img3D = torch.zeros(1, 3, 16, 224, 224)
-        dummy_img2D = torch.zeros(1, 3, 224, 224)
+        dummy_img3D = torch.zeros(1, 3, 16, img_size, img_size)
+        dummy_img2D = torch.zeros(1, 3, img_size, img_size)
 
         out_2D = self.net2D(dummy_img2D)
         out_3D = self.net3D(dummy_img3D)
@@ -81,11 +81,11 @@ class YOLO2Stream(torch.nn.Module):
                                  self.inter_channels_fusion, 
                                  mode=self.mode)
 
-        self.detection_head = DFLHead(num_classes, 
+        self.detection_head = DFLHead(num_classes, img_size,
                                       self.inter_channels_detection, 
                                       [self.inter_channels_fusion for x in range(len(out_channels_2D))], 
                                       mode=self.mode)
-        self.detection_head.stride = torch.tensor([224 / x[0].shape[-2] for x in out_2D])
+        self.detection_head.stride = torch.tensor([img_size / x[0].shape[-2] for x in out_2D])
         self.stride = self.detection_head.stride
 
         if pretrain_path is not None:
@@ -159,5 +159,6 @@ def build_yolo2stream(config):
     interchannels = config['interchannels']
     mode          = config['mode']
     pretrain_path = config['pretrain_path']
+    img_size      = config['img_size']
 
-    return YOLO2Stream(num_classes, backbone2D, backbone3D, interchannels, mode, pretrain_path)
+    return YOLO2Stream(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path)

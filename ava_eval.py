@@ -26,8 +26,8 @@ def eval(config):
             outputs = model(clip)
             outputs = non_max_suppression(outputs, 0.1, 0.5)[0]
 
-            H = 224
-            W = 224
+            H = config['img_size']
+            W = config['img_size']
 
             outputs[:, 0] /= W
             outputs[:, 1] /= H

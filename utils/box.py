@@ -226,10 +226,10 @@ def draw_bounding_box(image, bboxes, labels, confs, map_labels):
             
             bbox = []
 
-            bbox.append(int(max(0, box[0]) / 224 * 512))
-            bbox.append(int(max(0, box[1]) / 224 * 512))
-            bbox.append(int(min(W, box[2]) / 224 * 512))
-            bbox.append(int(min(H, box[3]) / 224 * 512))
+            bbox.append(int(max(0, box[0])))
+            bbox.append(int(max(0, box[1])))
+            bbox.append(int(min(W, box[2])))
+            bbox.append(int(min(H, box[3])))
 
             box_label(image, bbox, text)
 

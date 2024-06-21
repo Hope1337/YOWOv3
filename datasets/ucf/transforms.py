@@ -13,7 +13,8 @@ class UCF_transform():
         boxes : not change
     """
 
-    def __init__(self):
+    def __init__(self, img_size):
+        self.img_size = img_size
         pass
 
     def to_tensor(self, video_clip):
@@ -29,7 +30,7 @@ class UCF_transform():
     def __call__(self, clip, targets):
         W, H = clip[-1].size
         targets[:, :4] /= np.array([W, H, W, H])
-        clip = [img.resize([224, 224]) for img in clip]
+        clip = [img.resize([self.img_size, self.img_size]) for img in clip]
         clip = self.to_tensor(clip)
         clip = torch.stack(clip, dim=1)
         clip = self.normalize(clip)

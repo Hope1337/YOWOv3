@@ -38,7 +38,8 @@ class live_transform():
         boxes : not change
     """
 
-    def __init__(self):
+    def __init__(self, img_size):
+        self.img_size = img_size
         pass
 
     def to_tensor(self, image):
@@ -53,7 +54,7 @@ class live_transform():
     
     def __call__(self, img):
         W, H = img.size
-        img = img.resize([224, 224])
+        img = img.resize([self.img_size, self.img_size])
         img = self.to_tensor(img)
         img = self.normalize(img)
 
@@ -70,7 +71,7 @@ def detect(config):
     cap = cv2.VideoCapture(0) 
 
     frame_list = []
-    transform = live_transform()
+    transform = live_transform(config['img_size'])
 
     while True:
     # Đọc frame ảnh từ camera

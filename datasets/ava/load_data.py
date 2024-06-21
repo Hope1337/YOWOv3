@@ -12,7 +12,7 @@ import csv
             
 class AVA_dataset(data.Dataset):
 
-    def __init__(self, root_path, split_path, data_path, clip_length, sampling_rate, transform=Augmentation(), phase='train'):
+    def __init__(self, root_path, split_path, data_path, clip_length, sampling_rate, img_size, transform=Augmentation(), phase='train'):
        self.root_path     = root_path
        self.split_path    = os.path.join(root_path, 'annotations', split_path)
        self.data_path     = os.path.join(root_path, data_path)
@@ -22,6 +22,7 @@ class AVA_dataset(data.Dataset):
        self.valid_frame   = range(902, 1799) 
        self.num_classes   = 80
        self.phase         = phase
+       self.img_size      = img_size
 
        self.read_ann_csv()
     
@@ -129,13 +130,14 @@ def build_ava_dataset(config, phase):
     data_path     = "frames"
     clip_length   = config['clip_length']
     sampling_rate = config['sampling_rate']
+    img_size      = config['img_size']
 
     if phase == 'train':
         split_path    = "ava_train_v2.2.csv"
         return AVA_dataset(root_path=root_path, split_path=split_path, data_path=data_path, clip_length=clip_length,
-                           sampling_rate=sampling_rate, transform=Augmentation(), phase=phase)
+                           sampling_rate=sampling_rate, img_size=img_size, transform=Augmentation(img_size=img_size), phase=phase)
     elif phase == 'test':
         split_path    = "ava_val_v2.2.csv"
         return AVA_dataset(root_path=root_path, split_path=split_path, data_path=data_path, clip_length=clip_length,
-                           sampling_rate=sampling_rate, transform=UCF_transform(), phase=phase)
+                           sampling_rate=sampling_rate, img_size=img_size, transform=UCF_transform(img_size=img_size), phase=phase)
         

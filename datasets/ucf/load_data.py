@@ -11,7 +11,7 @@ from PIL import Image
             
 class UCF_dataset(data.Dataset):
 
-    def __init__(self, root_path, split_path, data_path, ann_path, clip_length, sampling_rate, transform=Augmentation(), img_size=(224, 224)):
+    def __init__(self, root_path, split_path, data_path, ann_path, clip_length, sampling_rate, img_size, transform=Augmentation()):
         self.root_path     = root_path                                        # path to root folder
         self.split_path    = os.path.join(root_path, split_path)              # path to split file
         self.data_path     = os.path.join(root_path, data_path)               # path to data folder
@@ -103,7 +103,7 @@ class UCF_dataset(data.Dataset):
 
 class UCF_dataset_test(data.Dataset):
 
-    def __init__(self, root_path, split_path, data_path, ann_path, clip_length, sampling_rate, transform=Augmentation(), img_size=(224, 224)):
+    def __init__(self, root_path, split_path, data_path, ann_path, clip_length, sampling_rate, img_size, transform=Augmentation()):
         self.root_path     = root_path                                        # path to root folder
         self.split_path    = os.path.join(root_path, split_path)              # path to split file
         self.data_path     = os.path.join(root_path, data_path)               # path to data folder
@@ -116,7 +116,7 @@ class UCF_dataset_test(data.Dataset):
             self.lines = f.readlines()
 
         self.nSample       = len(self.lines)
-        self.img_size       = img_size
+        self.img_size      = img_size
 
     def __len__(self):
         return self.nSample
@@ -227,12 +227,13 @@ def build_ucf_dataset(config, phase):
     ann_path      = "labels"
     clip_length   = config['clip_length']
     sampling_rate = config['sampling_rate']
+    img_size      = config['img_size']
 
     if phase == 'train':
         split_path    = "trainlist.txt"
         return UCF_dataset(root_path, split_path, data_path, ann_path
-                          , clip_length, sampling_rate, transform=Augmentation())
+                          , clip_length, sampling_rate, img_size, transform=Augmentation(img_size=img_size))
     elif phase == 'test':
         split_path    = "testlist.txt"
         return UCF_dataset_test(root_path, split_path, data_path, ann_path
-                          , clip_length, sampling_rate, transform=UCF_transform())
+                          , clip_length, sampling_rate, img_size, transform=UCF_transform(img_size=img_size))

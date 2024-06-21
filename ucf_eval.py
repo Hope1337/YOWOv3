@@ -67,8 +67,8 @@ def eval(config):
 
         targets = torch.cat(targets, dim=0).to("cuda")
 
-        height = 224
-        width  = 224
+        height = config['img_size']
+        width  = config['img_size']
 
         # Inference
         outputs = model(batch_clip)

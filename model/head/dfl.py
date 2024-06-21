@@ -42,12 +42,13 @@ class DFLHead(torch.nn.Module):
     anchors = torch.empty(0)
     strides = torch.empty(0)
 
-    def __init__(self, nc, interchannels, filters, mode='decoupled'):
+    def __init__(self, nc, img_size, interchannels, filters, mode='decoupled'):
         super().__init__()
         assert mode in ['coupled', 'decoupled'], "wrong dfl head mode"
         self.mode = mode
         self.ch = 16  # DFL channels
         self.nc = nc  # number of classes
+        self.img_size = img_size
         self.nl = len(filters)  # number of detection layers
         self.no = nc + self.ch * 4  # number of outputs per anchor
         self.stride = torch.zeros(self.nl)  # strides computed during build
@@ -89,5 +90,4 @@ class DFLHead(torch.nn.Module):
         m = self
         for a, b, s in zip(m.box, m.cls, m.stride):
             a[-1].bias.data[:] = 1.0  # box
-            # cls (.01 objects, 80 classes, 224 img)
-            b[-1].bias.data[:m.nc] = math.log(5 / m.nc / (224 / s) ** 2)
+            b[-1].bias.data[:m.nc] = math.log(5 / m.nc / (self.img_size / s) ** 2)

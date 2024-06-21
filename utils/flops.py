@@ -20,7 +20,7 @@ def FLOPs_and_Params(model, img_size, len_clip, device):
 def get_info(config):
     model = build_yolo2stream(config)
 
-    flops, params = FLOPs_and_Params(model, 224, 16, device='cuda')
+    flops, params = FLOPs_and_Params(model, config['img_size'], 16, device='cuda')
 
     print('==============================')
     print('FLOPs : {:.2f} G'.format(flops / 1e9))
