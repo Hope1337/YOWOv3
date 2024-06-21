@@ -45,7 +45,7 @@ class DecoupleHead(torch.nn.Module):
 
         return out
 
-class YOLO2Stream(torch.nn.Module):
+class YOWOv3(torch.nn.Module):
     def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path=None):
         super().__init__()
         assert mode in ['coupled', 'decoupled']
@@ -152,7 +152,7 @@ class YOLO2Stream(torch.nn.Module):
                 m.momentum = 0.03
 
 
-def build_yolo2stream(config):
+def build_yowov3(config):
     num_classes   = config['num_classes']
     backbone2D    = build_backbone2D(config)
     backbone3D    = build_backbone3D(config)
@@ -161,4 +161,4 @@ def build_yolo2stream(config):
     pretrain_path = config['pretrain_path']
     img_size      = config['img_size']
 
-    return YOLO2Stream(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path)
+    return YOWOv3(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path)

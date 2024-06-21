@@ -1,7 +1,7 @@
 import cv2
 import torch
 from datasets.build_dataset import build_dataset
-from model.TSN.YOLO2Stream import build_yolo2stream
+from model.TSN.YOWOv3 import build_yowov3
 from utils.box import non_max_suppression
 from utils.build_config import build_config
 import csv 
@@ -11,7 +11,7 @@ from evaluator.Evaluation import get_ava_performance
 def eval(config):
 
     dataset = build_dataset(config, phase='test')
-    model = build_yolo2stream(config)
+    model = build_yowov3(config)
     model.to("cuda")
     model.eval()
     

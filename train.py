@@ -24,7 +24,7 @@ from utils.build_config import build_config
 from datasets.ucf.load_data import UCF_dataset
 from datasets.collate_fn import collate_fn
 from datasets.build_dataset import build_dataset
-from model.TSN.YOLO2Stream import build_yolo2stream
+from model.TSN.YOWOv3 import build_yowov3 
 from utils.loss import build_loss
 from utils.warmup_lr import LinearWarmup
 import shutil
@@ -46,7 +46,7 @@ def train_model(config):
     dataloader = data.DataLoader(dataset, config['batch_size'], True, collate_fn=collate_fn
                                  , num_workers=config['num_workers'], pin_memory=True)
     
-    model = build_yolo2stream(config)
+    model = build_yowov3(config)
     
     total_params = round(sum(p.numel() for p in model.parameters()) // 1e6)
     print(f"Tổng số lượng tham số: {total_params}", flush=True)

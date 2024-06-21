@@ -20,7 +20,7 @@ from math import sqrt
 
 from datasets.build_dataset import build_dataset
 from datasets.collate_fn import collate_fn
-from model.TSN.YOLO2Stream import build_yolo2stream
+from model.TSN.YOWOv3 import build_yowov3
 from utils.build_config import build_config
 from utils.box import non_max_suppression, box_iou
 from evaluator.eval import compute_ap
@@ -37,7 +37,7 @@ def eval(config):
     dataloader = data.DataLoader(dataset, 32, False, collate_fn=collate_fn
                                  , num_workers=6, pin_memory=True)
     
-    model = build_yolo2stream(config)
+    model = build_yowov3(config)
     model.to("cuda")
     model.eval()
     ###############################################

@@ -1,6 +1,6 @@
 import torch
 from thop import profile
-from model.TSN.YOLO2Stream import build_yolo2stream
+from model.TSN.YOWOv3 import build_yowov3
 
 def FLOPs_and_Params(model, img_size, len_clip, device):
     # generate init video clip
@@ -18,7 +18,7 @@ def FLOPs_and_Params(model, img_size, len_clip, device):
 
 
 def get_info(config):
-    model = build_yolo2stream(config)
+    model = build_yowov3(config)
 
     flops, params = FLOPs_and_Params(model, config['img_size'], 16, device='cuda')
 
