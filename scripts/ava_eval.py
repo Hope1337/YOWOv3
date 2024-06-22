@@ -7,11 +7,13 @@ from utils.build_config import build_config
 import csv 
 import tqdm
 from evaluator.Evaluation import get_ava_performance
+from utils.flops import get_info
 
 def eval(config):
 
     dataset = build_dataset(config, phase='test')
     model = build_yowov3(config)
+    get_info(config, model)
     model.to("cuda")
     model.eval()
     

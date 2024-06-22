@@ -26,7 +26,7 @@ from utils.box import non_max_suppression, box_iou
 from evaluator.eval import compute_ap
 import tqdm
 from datasets.ucf.transforms import UCF_transform
-
+from utils.flops import get_info
 
 @torch.no_grad()
 def eval(config):
@@ -38,6 +38,7 @@ def eval(config):
                                  , num_workers=6, pin_memory=True)
     
     model = build_yowov3(config)
+    get_info(config, model)
     model.to("cuda")
     model.eval()
     ###############################################

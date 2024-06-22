@@ -24,8 +24,8 @@ from utils.box import draw_bounding_box
 from utils.box import non_max_suppression
 from model.TSN.YOWOv3 import build_yowov3
 from utils.build_config import build_config
-from utils.flops import FLOPs_and_Params
 from PIL import Image
+from utils.flops import get_info
 
 class live_transform():
     """
@@ -63,9 +63,10 @@ class live_transform():
 def detect(config):
 
     model   = build_yowov3(config) 
-    mapping = config['idx2name']
+    get_info(config, model)
     model.to("cuda")
     model.eval()
+    mapping = config['idx2name']
 
     #FLOPs_and_Params(model, 224, 16, 'cuda')
     cap = cv2.VideoCapture(0) 

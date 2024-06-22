@@ -24,19 +24,19 @@ from utils.box import draw_bounding_box
 from utils.box import non_max_suppression
 from model.TSN.YOWOv3 import build_yowov3 
 from utils.build_config import build_config
-from utils.flops import FLOPs_and_Params
+from utils.flops import get_info
 
 def detect(config):
 
     #########################################################################
     dataset = build_dataset(config, phase='test')
     model   = build_yowov3(config) 
+    get_info(config, model)
     ##########################################################################
     mapping = config['idx2name']
     model.to("cuda")
     model.eval()
 
-    #FLOPs_and_Params(model, 224, 16, 'cuda')
 
     for idx in range(dataset.__len__()):
         origin_image, clip, bboxes, labels = dataset.__getitem__(idx, get_origin_image=True)

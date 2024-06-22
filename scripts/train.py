@@ -28,6 +28,7 @@ from model.TSN.YOWOv3 import build_yowov3
 from utils.loss import build_loss
 from utils.warmup_lr import LinearWarmup
 import shutil
+from utils.flops import get_info
 
 
 def train_model(config):
@@ -47,12 +48,9 @@ def train_model(config):
                                  , num_workers=config['num_workers'], pin_memory=True)
     
     model = build_yowov3(config)
-    
-    total_params = round(sum(p.numel() for p in model.parameters()) // 1e6)
-    print(f"Tổng số lượng tham số: {total_params}", flush=True)
-    #sys.exit()
-    model.train()
+    get_info(config, model)
     model.to("cuda")
+    model.train()
     
     criterion = build_loss(model, config)
     #####################################################
@@ -90,7 +88,6 @@ def train_model(config):
     while(cur_epoch <= max_epoch):
         cnt_pram_update = 0
         for iteration, (batch_clip, batch_bboxes, batch_labels) in enumerate(dataloader): 
-            t_batch = time.time()
 
             batch_size   = batch_clip.shape[0]
             batch_clip   = batch_clip.to("cuda")
@@ -127,7 +124,7 @@ def train_model(config):
                 optimizer.zero_grad()
                 ema.update(model)
 
-                print("epoch : {}, update : {}, time = {}, loss = {}".format(cur_epoch,  cnt_pram_update, round(time.time() - t_batch, 2), loss_acc), flush=True)
+                print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
                 loss_acc = 0.0
                 #if cnt_pram_update % 500 == 0:
                     #torch.save(model.state_dict(), r"/home/manh/Projects/My-YOWO/weights/model_checkpoint/epch_{}_update_".format(cur_epoch) + str(cnt_pram_update) + ".pth")

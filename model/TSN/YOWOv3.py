@@ -89,7 +89,7 @@ class YOWOv3(torch.nn.Module):
         self.stride = self.detection_head.stride
 
         if pretrain_path is not None:
-            self.load_state_dict(torch.load(pretrain_path))
+            self.load_pretrain(pretrain_path)
         else : 
             self.net2D.load_pretrain()
             self.net3D.load_pretrain()
@@ -110,17 +110,30 @@ class YOWOv3(torch.nn.Module):
         # [B, 4 + num_classes, 1029]
         return self.detection_head(list(ft))
     
-    def load_pretrain(self, pretrain_yolo):
+    def load_pretrain(self, pretrain_yowov3):
         state_dict = self.state_dict()
-
-        pretrain_state_dict = torch.load(pretrain_yolo)
+        pretrain_state_dict = torch.load(pretrain_yowov3)
+        flag = 0
         
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:
+                flag = 1
                 continue
             state_dict[param_name] = value
-            
-        self.load_state_dict(state_dict)
+
+        try:
+            self.load_state_dict(state_dict)
+        except:
+            flag = 1
+
+        if flag == 1:
+            print("WARNING !")
+            print("########################################################################")
+            print("There are some tensors in the model that do not match the checkpoint.") 
+            print("The model automatically ignores them for the purpose of fine-tuning.") 
+            print("Please ensure that this is your intention.")
+            print("########################################################################")
+            print()
     
     def init_conv2d(self):
         """
