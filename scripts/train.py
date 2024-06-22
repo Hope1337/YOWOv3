@@ -125,6 +125,9 @@ def train_model(config):
                 ema.update(model)
 
                 print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
+                with open("logging.txt", "w") as f:
+                    f.write("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc))
+
                 loss_acc = 0.0
                 #if cnt_pram_update % 500 == 0:
                     #torch.save(model.state_dict(), r"/home/manh/Projects/My-YOWO/weights/model_checkpoint/epch_{}_update_".format(cur_epoch) + str(cnt_pram_update) + ".pth")
