@@ -99,7 +99,7 @@ backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : null
+pretrain_path     : /home/manh/checkpoint/20.31_ava(i3d)/ema_epoch_9.pth
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
 img_size          : 224
 clip_length       : 16

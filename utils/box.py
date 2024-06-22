@@ -2,6 +2,7 @@ import torch
 import time
 import torchvision
 import cv2
+import numpy as np
 
 def make_anchors(x, strides, offset=0.5):
     """
@@ -102,9 +103,22 @@ def non_max_suppression(prediction, conf_threshold=0.25, iou_threshold=0.45):
 
     return outputs
 
+def opacity(img, pt1, pt2):
+    x = pt1[0]
+    y = pt1[1]
+    w = pt2[0] - pt1[0]
+    h = pt2[1] - pt1[1] 
+    sub_img = img[y:y+h, x:x+w]
+    white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
+
+    res = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
+
+    # Putting the image back to its position
+    img[y:y+h, x:x+w] = res
+
 # adapted from https://inside-machinelearning.com/en/bounding-boxes-python-function/
 # một chút sửa đổi để phù hợp với mục đích sử dụng
-def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(200, 25, 0)):
+def box_label(image, box, label=None, color=(0, 255, 0), txt_color=(0, 0, 0)):
   """
   :param image : np array [H, W, C] (BGR)
   :param label : text, default = None
@@ -118,26 +132,25 @@ def box_label(image, box, label=None, color=(100, 0, 0), txt_color=(200, 25, 0))
     outside = p1[1] - h >= 3
     p2 = p1[0] + w, p1[1] - h - 3 if outside else p1[1] + h + 3
     y0, dy = 0,10
-    y0 = p1[1] - 2 #if outside else p1[1] + h + 2
+    y0 = p1[1] - 2 if outside else p1[1] + h + 2
     for i, line in enumerate(label.split('\n')):
         y = y0 + i*dy
-        #cv2.putText(currStack, line, (50, y ), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA, False)
+        x = p1[0]
+        text_size, _ = cv2.getTextSize(line, cv2.LINE_AA, lw/5, tf)
+        text_width, text_height = text_size
+        # Vẽ hình chữ nhật bao quanh văn bản
+        rectangle_color = (0, 255, 0)  # Màu xanh lá cây
+        rectangle_thickness = 1
+        #cv2.rectangle(image, (x, y), (x + text_width + 1, y + text_height + 1), rectangle_color, cv2.FILLED, cv2.LINE_AA)
+        opacity(image, (x, y), (x + text_width + 1, y + text_height + 1))
         cv2.putText(image,
-                line, (p1[0], y),
+                line, (x, y + text_height),
                 0,
                 lw / 5,
                 txt_color,
                 thickness=tf,
                 lineType=cv2.LINE_AA)
-        #cv2.rectangle(image, p1, (p2[0], y), color, -1, cv2.LINE_AA)  # filled
-    #cv2.rectangle(image, p1, p2, color, -1, cv2.LINE_AA)  # filled
-    #cv2.putText(image,
-                #label, (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
-                #0,
-                #lw / 10,
-                #txt_color,
-                #thickness=tf,
-                #lineType=cv2.LINE_AA)
+
     
 def box_iou(box1, box2):
     # https://github.com/pytorch/vision/blob/master/torchvision/ops/boxes.py
