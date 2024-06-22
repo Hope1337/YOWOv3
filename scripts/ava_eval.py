@@ -46,9 +46,5 @@ def eval(config):
                 writer.writerow([video_name, sec, tl_x, tl_y, br_x, 
                     br_y, int(output[5].item()) + 1, conf])
 
-            
 
-config = build_config()
-eval(config)
-
-get_ava_performance.eval(config)
+    get_ava_performance.eval(config)

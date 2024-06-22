@@ -128,12 +128,7 @@ def eval(config):
 
     # Return results
     model.float()  # for training
-    return map50, mean_ap
-
-
-if __name__ == "__main__":
-    config = build_config()
-    map50, mean_ap = eval(config)
+    #return map50, mean_ap
     print(map50, flush=True)
     print(flush=True)
     print("=================================================================", flush=True)
