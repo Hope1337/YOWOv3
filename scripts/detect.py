@@ -46,7 +46,7 @@ def detect(config):
         outputs = model(clip)
         outputs = non_max_suppression(outputs, conf_threshold=0.3, iou_threshold=0.5)[0]
 
-        origin_image = cv2.resize(origin_image, (512, 512))
+        origin_image = cv2.resize(origin_image, (config['img_size'], config['img_size']))
 
         draw_bounding_box(origin_image, outputs[:, :4], outputs[:, 5], outputs[:, 4], mapping)
 

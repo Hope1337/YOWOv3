@@ -101,7 +101,7 @@ mode              : decoupled
 interchannels     : [256, 256, 256]
 pretrain_path     : /home/manh/checkpoint/20.31_ava(i3d)/ema_epoch_9.pth
 data_root         : /home/manh/Datasets/AVA/AVA_Dataset
-img_size          : 224
+img_size          : 512
 clip_length       : 16
 batch_size        : 8
 num_workers       : 6
