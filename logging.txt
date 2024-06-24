@@ -1,1 +1,1 @@
-epoch : 1, update : 7, loss = 14.094380378723145
+epoch : 1, update : 2, loss = 10.050774157047272

@@ -28,6 +28,7 @@ class TAL:
         self.scale_cls_loss = config['LOSS']['TAL']['scale_cls_loss']
         self.scale_box_loss = config['LOSS']['TAL']['scale_box_loss']
         self.scale_dfl_loss = config['LOSS']['TAL']['scale_dfl_loss']
+        self.soft_label     = config['LOSS']['TAL']['soft_label']
         self.eps            = 1e-9 
 
         self.bs = 1
@@ -288,15 +289,16 @@ class TAL:
         fg_scores_mask = fg_mask[:, :, None].repeat(1, 1, self.nc)
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
-        # normalize
-        #align_metric *= mask_pos
-        #pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
-        #pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
-        #norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
-        #norm_align_metric = norm_align_metric.unsqueeze(-1)
-        #target_scores = target_scores * norm_align_metric 
-        #pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
-        #target_scores = target_scores * pos_overlaps
+        if self.soft_label:
+            # normalize
+            align_metric *= mask_pos
+            pos_align_metrics = align_metric.amax(axis=-1, keepdim=True)
+            pos_overlaps = (overlaps * mask_pos).amax(axis=-1, keepdim=True)
+            norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + self.eps)).amax(-2)
+            norm_align_metric = norm_align_metric.unsqueeze(-1)
+            target_scores = target_scores * norm_align_metric 
+            pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
+            target_scores = target_scores * pos_overlaps
 
         return target_bboxes, target_scores, fg_mask.bool()
 
@@ -369,6 +371,7 @@ class SimOTA:
         self.gamma          = config['LOSS']['SIMOTA']['gamma']
         self.dynamic_k      = config['LOSS']['SIMOTA']['dynamic_k']
         self.dynamic_top_k  = config['LOSS']['SIMOTA']['dynamic_top_k']
+        self.soft_label     = config['LOSS']['SIMOTA']['soft_label']
         self.eps            = 1e-9
 
         if self.mode == 'unbalance':
@@ -704,8 +707,9 @@ class SimOTA:
         fg_scores_mask = fg_mask[:, :, None].repeat(1, 1, self.nc)
         target_scores = torch.where(fg_scores_mask > 0, target_scores, 0)
 
-        pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
-        target_scores = target_scores * pos_overlaps
+        if self.soft_label:
+            pos_overlaps = (overlaps * mask_pos).sum(-2).unsqueeze(-1)
+            target_scores = target_scores * pos_overlaps
 
         return target_bboxes, target_scores, fg_mask.bool()
 
