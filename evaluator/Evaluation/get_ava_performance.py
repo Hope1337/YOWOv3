@@ -124,7 +124,7 @@ def read_labelmap(labelmap_file):
   return labelmap, class_ids
 
 
-def run_evaluation(labelmap, groundtruth, detections):
+def run_evaluation(labelmap, groundtruth, detections, mode, config):
   """Runs evaluations given input files.
 
   Args:
@@ -205,12 +205,14 @@ def parse_arguments(config):
       help="CSV file containing inferred action detections.",
       type=argparse.FileType("r"),
       default=config['detections'])
+  parser.add_argument('-m', '--mode', type=str, help='train/eval/live/detect')
+  parser.add_argument('-cf', '--config', type=str, help='path to config file')
   return parser.parse_args()
 
 
 def eval(config):
   logging.basicConfig(level=logging.INFO)
-  args = parse_arguments(config) 
+  args = parse_arguments(config)
   run_evaluation(**vars(args))
 
 
