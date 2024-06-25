@@ -71,6 +71,7 @@ LOSS:
     alpha  : 0.5
     beta   : 6.0
     radius : 2.5
+    soft_label : False
 
     scale_cls_loss : 0.5
     scale_box_loss : 7.5
@@ -81,6 +82,7 @@ LOSS:
     gamma  : 0.5
     radius : 2.5
     mode   : balance
+    soft_label : True
 
     dynamic_k     : False
     dynamic_top_k : 40
@@ -99,7 +101,7 @@ backbone3D        : i3d
 fusion_module     : CFAM
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : /home/manh/Projects/Project_VU/weights/model_checkpoint/88.32/ema_epoch_7.pth
+pretrain_path     : /home/manh/Projects/Project_VU/weights/model_checkpoint/ema_epoch_7.pth
 data_root         : /home/manh/Datasets/UCF101-24/ucf242
 img_size          : 224
 clip_length       : 16

@@ -125,7 +125,7 @@ def train_model(config):
                 ema.update(model)
 
                 print("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc), flush=True)
-                with open("logging.txt", "w") as f:
+                with open(os.path.join(config['save_folder'], "logging.txt"), "w") as f:
                     f.write("epoch : {}, update : {}, loss = {}".format(cur_epoch,  cnt_pram_update, loss_acc))
 
                 loss_acc = 0.0

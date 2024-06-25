@@ -117,6 +117,8 @@ class YOWOv3(torch.nn.Module):
         
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:
+                if param_name.endswith("total_params") or param_name.endswith("total_ops"):
+                    continue
                 flag = 1
                 continue
             state_dict[param_name] = value
