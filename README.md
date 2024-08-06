@@ -29,9 +29,8 @@ In this Instruction, I will divide it into smaller sections, with each section s
 * **Basic Usage**: Guide on using the pre-existing train, evaluate, detect, and live code in the repository.
 * **Customization**: Guide on customizing datasets and components within the model.
 * **Pretrained Resources**: Pretrained resources for 2D backbone, 3D backbone, and model checkpoints.
-* **Limitations and Future Development**: In this section, I will outline the limitations that I have identified in this project. I did not have enough time and resources to experiment and do everything, so I will reserve it for future research.
+* **Limitations and Future Development**: In this section, I will outline the limitations that I have identified in this project. I did not have enough time and resources to experiment and do everything, so I will leave it for other research in the future.
 * **Some Notes**: I will add some points that I think may cause difficulties or misunderstandings in using the repository. I will also update it based on the issues created.
-eave it for other research in the future.
 * **References**: This section cites the repositories that I primarily relied on throughout the development of this project. These repositories have been incredibly helpful, and I am very grateful to the authors for providing them to the research community.
 
 
