@@ -1,66 +1,118 @@
 # YOWOv3: An Efficient and Generalized Framework for Human Action Detection and Recognition
 
-## Temporary Instructions
+This is an implementation of paper : [YOWOv3: An Efficient and Generalized Framework for Human Action Detection and Recognition](https://arxiv.org/abs/2408.02623).
 
-If you encounter any difficulties or have any questions, feel free to ask in Issues section. I'm here to answer everyone's questions. Thank you sincerely :3.
 
-Currently, the **YOWOv3** model and paper are still being finalized, and experiments are continuously being conducted. Therefore, we are unable to provide complete official instructions at this time. However, we will provide a temporary guide, and the comprehensive official instructions will be supplemented and completed in the near future, soon :3. For now, you can:
+---
+## Preface 
 
-- Prepare UCF101-24 dataset.
-- Prepare AVAv2.2 dataset.
-- Detect on UCF101-24 and AVAv2.2 dataset.
-- Detect using your own camera.
+Hello, thank you everyone for your attention to this study. If you find it valuable, please consider leaving a star, as it would greatly encourage me.
 
-Note: In the **config** folder, there are two files: **ucf_config.yaml** and **ava_config.yaml**. These are the configuration files for the corresponding datasets. We read information from these config files to build the model and specify hyperparameters and related details. To decide which file to use, simply go to **utils/build_config.py** and modify the default path in the ```build_config``` function (see code below) to the desired file. This can be handled more easily using an argument parser, but as mentioned, the code is currently being used for research purposes, and everything is set up for convenience during experimentation.
+If you intend to use this repository for your own research, please consider to cite:
 
-```python
-def build_config(config_file='config/ucf_config.yaml'):
-    with open(config_file, "r") as file:
-        config = yaml.load(file, Loader=yaml.SafeLoader)
 
-    if config['active_checker']:
-        pass
-    
-    return config
+---
+## Structure of Instruction
+
+In this Instruction, I will divide it into smaller sections, with each section serving a specific purpose. I will provide a summary of this Instruction structure in order right below. Please read carefully to locate the information you are looking for.
+
+* **Preparation**: Environment setup and dataset preparation guide. 
+* **Basic Usage**: Guide on using the pre-existing train, evaluate, detect, and live code in the repository.
+* **Customization**: Guide on customizing datasets and components within the model.
+* **Pretrained Resources**: Pretrained resources for 2D backbone, 3D backbone, and model checkpoints.
+* **Limitations and Future Development**: In this section, I will outline the limitations that I have identified in this project. I did not have enough time and resources to experiment and do everything, so I will l
+* **Some Notes**: I will add some points that I think may cause difficulties or misunderstandings in using the repository. I will also update it based on the issues created.
+eave it for other research in the future.
+* **References**: This section cites the repositories that I primarily relied on throughout the development of this project. These repositories have been incredibly helpful, and I am very grateful to the authors for providing them to the research community.
+
+
+
+---
+## Preparation
+### Environment setup 
+Clone this repository
+```cpp 
+git clone https://github.com/AakiraOtok/YOWOv3.git
 ```
 
-### Prepare UCF101-24 dataset
+Use Python 3.8 or Python 3.9, and then download the dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+**Note**:
+On my system, I use Python 3.7 with slightly different dependencies, specifically for torch:
+
+```python
+torch==1.13.1+cu117
+torchaudio==0.13.1+cu117
+torchvision==0.14.1+cu117
+```
+However, when testing on another system, it seems that these versions have been deprecated. I have updated the requirements.txt file and tested it again on systems using Python 3.8 and Python 3.9, and everything seems to be working fine. If you encounter any errors during the environment setup, please try asking in the "issues" section. Perhaps someone has faced a similar issue and has already found a solution.
+
+
+### Datasets
+
+#### UCF101-24
 - Download from (as in YOWOv2): https://drive.google.com/file/d/1Dwh90pRi7uGkH5qLRjQIFiEmMJrAog5J/view
-- Then go to the config file and change **data_root** to the path to the folder path of UCF101-24 dataset.
-### Prepare AVAv2.2 dataset
+
+#### AVAv2.2 
 - Follow the instructions at: https://github.com/yjh0410/AVA_Dataset.
 - If you find that video downloading takes too long, you can consider downloading them from my Hugging Face repository and then proceed with the remaining steps as instructed above: https://huggingface.co/datasets/manh6054/avav2.2_train_set/tree/main.
-### Detect on UCF101-24 and AVAv2.2 dataset
 
-*Currently, the displayed bounding boxes and labels are not very visually appealing. I will improve them in the near future.*
 
-- Specify which config file will be read (as mentioned above).
-- Download the checkpoint for AVAv2.2 (**Medium-2 model**, checkpoint file name: ema_epoch_7_88.24_mAP.pth) from: https://huggingface.co/manh6054/Project_VU/tree/main.
-- Download the checkpoint for UCF101-24 (**Medium-2 model**, checkpoint file name: ema_epoch_9.pth) from: https://huggingface.co/manh6054/Project_VU/tree/main.
-- Open the config file and modify **backbone3D** to **i3d** and **pretrain_path** to the path of the downloaded checkpoint.
-- Run ```python detect.py```
-### Detect using your own camera
-Follow the instructions as mentioned above and run ```python live.py```.
+---
 
-## Experimental results:
+## Basic Usage
 
-Note: The **Medium-1**, **Medium-2**, and **Large** models correspond to the 3D backbone models shufflenetv2, i3d, and resnext101, respectively.
+### About config file
+The project is designed in such a way that almost every configuration can be adjusted through the config file. In the repository, I have provided two sample config files: ucf_config.yaml and ava_config.yaml for the UCF101-24 and AVAv2.2 datasets, respectively. The "Basic Usage" section will not involve extensive modifications of the config file, while the customization of the config will be covered in the "Customization" section.
 
-### UCF101-24
-![image](https://github.com/AakiraOtok/Project_VU/assets/120596914/45f27332-ac36-4d2b-beb9-4cbf6c35cff5)
+### Simple command line
 
-### AVAv2.2
-![image](https://github.com/AakiraOtok/Project_VU/assets/120596914/6658d501-aa2d-47ef-af4b-e1b2d672b709)
+We have the following command template:
+```powershell
+python main.py --mode [mode] --config [config_file_path]
+```
+Or the shorthand version:
 
-## Dataset
+```powershell
+python main.py -m [mode] -cf [config_file_path]
+```
 
-## Pretrained Model 
+For ```[mode] = {train, eval, detect, live}``` for training, evaluation, detection (visualization on the current dataset), or live (camera usage) respectively. The```[config_file_path]``` is the path to the config file.
 
-## Instruction
+Example of training a model on UCF101-24:
+```powershell
+python main.py --mode train --config config/ucf_config.yaml
+```
+Or try evaluating a model on AVAv2.2:
+```powershell
+python main.py -m eval -cf config/ava_config.yaml
+```
 
-Some notes:
+## Customization
+
+Updating ...
+
+## Pretrained Resources
+
+All pre-trained models for backbone2D, backbone3D and model checkpoints are publicly available on [my Hugging Face repo](https://huggingface.co/manh6054/YOWOv3/tree/main).
+
+Regarding the model checkpoints, I have consolidated them into an Excel file that looks like this:
+
+Each cell represents a model checkpoint, displaying information such as mAP, GLOPs, and # param in order. The checkpoints are stored as folders named after the corresponding cells in the Excel file (e.g., O27, N23, ...). Each folder contains the respective config file used for training that model. Please note that both the regular checkpoint and the exponential moving average (EMA) version of the model are saved.
+
+## Limitations and Future Development
+
+- The architecture of YOWOv3 does not differ much from YOWOv2, although initially I had planned to try a few things. Firstly, the feature map from the 3D branch does not go through path aggregation but merges with the 2D branch and is used by the model for predictions directly. This makes the architecture look quite simple, and I believe it will have a significant impact on performance. Another thing is that in [this](https://arxiv.org/abs/2108.07755) paper, the authors propose an alternative method to replace the decoupled head called Task-aligned head, which can avoid repeating attention modules in YOWOv3 and make the model much lighter.
+
+- The project was developed gradually through stages and gradually expanded, so there are still some areas that are not comprehensive enough. For example, evaluating on AVA v2.2 took a lot of time because I did not parallelize this process (batch_size = 1). The reason for this is that the format required by AVA v2.2 demands an additional identity for the bounding box, which I did not set up in the initial evaluation code as it was only serving experiments on UCF101-24 at that time.
+
+
+## Some notes:
 - In the commit history, there are commits named after the best checkpoints. The code in that commit is what I used to train the model, but it's not the config file! This is because during the training process, I opened another terminal window to experiment with a few things, so the config file changed and I didn't revert it back to the original. The original configs are saved in my notes, not in the commit files.
-
 
 ## References
 
