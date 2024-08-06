@@ -9,8 +9,17 @@ This is an implementation of paper : [YOWOv3: An Efficient and Generalized Frame
 Hello, thank you everyone for your attention to this study. If you find it valuable, please consider leaving a star, as it would greatly encourage me.
 
 If you intend to use this repository for your own research, please consider to cite:
-
-
+```latex
+@misc{dang2024yowov3efficientgeneralizedframework,
+      title={YOWOv3: An Efficient and Generalized Framework for Human Action Detection and Recognition}, 
+      author={Duc Manh Nguyen Dang and Viet Hang Duong and Jia Ching Wang and Nhan Bui Duc},
+      year={2024},
+      eprint={2408.02623},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2408.02623}, 
+}
+```
 ---
 ## Structure of Instruction
 
