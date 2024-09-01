@@ -21,6 +21,11 @@ If you intend to use this repository for your own research, please consider to c
 }
 ```
 ---
+## About asking question
+I am very pleased that everyone has shown interest in this project. There are many questions being raised, and I am more than willing to answer them as soon as possible. However, if you have any doubts about the code or related matters, please provide me with context (config file, some samples that you couldn't detect, a checkpoint, etc.). Also, please use **English**.
+
+
+---
 ## Structure of Instruction
 
 In this Instruction, I will divide it into smaller sections, with each section serving a specific purpose. I will provide a summary of this Instruction structure in order right below. Please read carefully to locate the information you are looking for.
