@@ -37,7 +37,7 @@ In this Instruction, I will divide it into smaller sections, with each section s
 * **Limitations and Future Development**: In this section, I will outline the limitations that I have identified in this project. I did not have enough time and resources to experiment and do everything, so I will leave it for other research in the future.
 * **Some Notes**: I will add some points that I think may cause difficulties or misunderstandings in using the repository. I will also update it based on the issues created.
 * **References**: This section cites the repositories that I primarily relied on throughout the development of this project. These repositories have been incredibly helpful, and I am very grateful to the authors for providing them to the research community.
-
+ 
 
 
 ---
@@ -80,7 +80,13 @@ However, when testing on another system, it seems that these versions have been 
 ## Basic Usage
 
 ### About config file
-The project is designed in such a way that almost every configuration can be adjusted through the config file. In the repository, I have provided two sample config files: ucf_config.yaml and ava_config.yaml for the UCF101-24 and AVAv2.2 datasets, respectively. The "Basic Usage" section will not involve extensive modifications of the config file, while the customization of the config will be covered in the "Customization" section.
+The project is designed in such a way that almost every configuration can be adjusted through the config file. In the repository, I have provided two sample config files: ucf_config.yaml and ava_config.yaml for the UCF101-24 and AVAv2.2 datasets, respectively. The **Basic Usage** section will not involve extensive modifications of the config file, while the customization of the config will be covered in the **Customization** section.
+
+<span style="color:red">
+    
+**Warning!**: Since all configurations are closely related to the config file, please carefully read the part **Modify Config file** in the **Customization** section to be able to use the config file correctly.
+    
+</span>
 
 ### Simple command line
 
@@ -105,9 +111,92 @@ Or try evaluating a model on AVAv2.2:
 python main.py -m eval -cf config/ava_config.yaml
 ```
 
+
+---
+
 ## Customization
 
-Updating ...
+### Modify Config file
+
+There are some notes about the config file:
+
+- If you want to train from scratch, set **pretrain_path = null**. Otherwise, if you want to use pretrain model, please set **pretrain_path** to the path of the checkpoint file.
+- Because the project is developed over time, some options that were not present in the past might be added later, such as **image_size**. Some config files in old checkpoint folder may lack these options and cause errors. You just need to add the missing options. I have prepared two sample config files (with all options) in the config folder of this project. Please refer to them for corrections.
+- All options used must remain consistent during both training and testing. For example, if the **image_size** option is set to **224** during training, changing it to **512** during inference will severely impact performance. Similarly, if you set **backbone3D = i3d** during training but infer using **resnext101**, the model will still run but with warnings and, of course, the detection results will be incorrect.
+- Config file được tự động load lên qua hàm ```build_config``` trong ```utils/build_config.py```: 
+
+```python=
+import yaml
+
+def build_config(config_file='config/ucf_config.yaml'):
+    with open(config_file, "r") as file:
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+
+    if config['active_checker']:
+        pass
+    
+    return config
+```
+
+## Custom Dataset
+
+I know why you are here, my friend =)))))
+
+You can build a custom dataset for yourself, however, make sure to carefully read the notes below to do it correctly.
+
+Firstly, every time you want to use a dataset, simply call the ```build_dataset``` function as shown in the example code:
+
+```python
+    dataset = build_dataset(config, phase='train')
+```
+
+The ```build_dataset``` function is defined in ```datasets/build_dataset.py``` as follows:
+
+ 
+
+```python=
+from datasets.ucf.load_data import build_ucf_dataset
+from datasets.ava.load_data import build_ava_dataset
+
+def build_dataset(config, phase):
+    dataset = config['dataset']
+
+    if dataset == 'ucf':
+        return build_ucf_dataset(config, phase)
+    elif dataset == 'ava':
+        return build_ava_dataset(config, phase)
+```
+
+To accommodate your needs, you simply need to define the ```build_custom_dataset``` function for your specific purpose and modify the above ```build_dataset``` function accordingly.
+
+The model is generalized to train on **multi-action** datasets, meaning that each box may have multiple actions simultaneously. However, metrics for **one box - one action** are more common than **one box - multi-action**. Therefore, I will guide you on evaluation as **one box - one action**, while training as **one box - multi-action** for generalization.
+
+The ```build_dataset``` function returns custom-defined dataset classes. There are two important parameters to consider: ```config``` and ```phase```. ```config``` is a dictionary containing options as in the config file (loaded beforehand), with nothing particularly special. On the other hand, ```phase``` has two values: **train** or **test**. **train** is used for training, and **test** is used for detection/evaluation/live stages.
+
+Let:
+
+- $C$: the number of channels
+- $D$: the number of frames (default = 16)
+- $H$, $W$: the height and width of the image
+- $N$: the number of truth boxes
+- $num\_class$: the number of classes
+
+
+You need to return:
+
+- **clip**: a tensor with shape $[C, D, H, W]$ representing the clip to be detected.
+
+- **boxes**: a tensor with shape $[N, 4]$, containing the coordinates x_top_left, y_top_left, x_bottom_right, y_bottom_right of the truth boxes.
+- **labels**: 
+    - For **phase = train**, return a tensor with shape $[N, num\_class]$ where num_class is a vector with the ith element being $1$ if class $i$ is present and $0$ otherwise. 
+    - For **phase = test**, return a tensor with shape $[N]$, where i is the class index of the $i$th truth box.
+
+- Additionally, to use detect.py, the get_item function also needs an additional parameter get_origin_image. If this parameter is set to True, it should return the original unaltered image.
+
+
+To evaluate, use ```ucf_eval.py```.
+
+---
 
 ## Pretrained Resources
 
@@ -115,7 +204,16 @@ All pre-trained models for backbone2D, backbone3D and model checkpoints are publ
 
 Regarding the model checkpoints, I have consolidated them into an Excel file that looks like this:
 
+![Untitled](https://hackmd.io/_uploads/BkVc9KSnA.png)
+
+
 Each cell represents a model checkpoint, displaying information such as mAP, GLOPs, and # param in order. The checkpoints are stored as folders named after the corresponding cells in the Excel file (e.g., O27, N23, ...). Each folder contains the respective config file used for training that model. Please note that both the regular checkpoint and the exponential moving average (EMA) version of the model are saved.
+
+<span style="color:red">
+    
+**Warning!**: Since all configurations are closely related to the config file, please carefully read the part **Modify Config file** in the **Customization** section to be able to use the config file correctly.
+    
+</span>
 
 ## Limitations and Future Development
 
@@ -124,8 +222,14 @@ Each cell represents a model checkpoint, displaying information such as mAP, GLO
 - The project was developed gradually through stages and gradually expanded, so there are still some areas that are not comprehensive enough. For example, evaluating on AVA v2.2 took a lot of time because I did not parallelize this process (batch_size = 1). The reason for this is that the format required by AVA v2.2 demands an additional identity for the bounding box, which I did not set up in the initial evaluation code as it was only serving experiments on UCF101-24 at that time.
 
 
+
+---
+
 ## Some notes:
 - In the commit history, there are commits named after the best checkpoints. The code in that commit is what I used to train the model, but it's not the config file! This is because during the training process, I opened another terminal window to experiment with a few things, so the config file changed and I didn't revert it back to the original. The original configs are saved in my notes, not in the commit files.
+
+
+---
 
 ## References
 
