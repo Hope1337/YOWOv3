@@ -125,7 +125,7 @@ There are some notes about the config file:
 - All options used must remain consistent during both training and testing. For example, if the **image_size** option is set to **224** during training, changing it to **512** during inference will severely impact performance. Similarly, if you set **backbone3D = i3d** during training but infer using **resnext101**, the model will still run but with warnings and, of course, the detection results will be incorrect.
 - Config file được tự động load lên qua hàm ```build_config``` trong ```utils/build_config.py```: 
 
-```python=
+```python
 import yaml
 
 def build_config(config_file='config/ucf_config.yaml'):
@@ -154,7 +154,7 @@ The ```build_dataset``` function is defined in ```datasets/build_dataset.py``` a
 
  
 
-```python=
+```python
 from datasets.ucf.load_data import build_ucf_dataset
 from datasets.ava.load_data import build_ava_dataset
 
@@ -204,7 +204,8 @@ All pre-trained models for backbone2D, backbone3D and model checkpoints are publ
 
 Regarding the model checkpoints, I have consolidated them into an Excel file that looks like this:
 
-![Untitled](https://hackmd.io/_uploads/BkVc9KSnA.png)
+
+![Untitled](https://github.com/user-attachments/assets/f47de4b7-2d35-4f22-9bb3-8aee59320867)
 
 
 Each cell represents a model checkpoint, displaying information such as mAP, GLOPs, and # param in order. The checkpoints are stored as folders named after the corresponding cells in the Excel file (e.g., O27, N23, ...). Each folder contains the respective config file used for training that model. Please note that both the regular checkpoint and the exponential moving average (EMA) version of the model are saved.
