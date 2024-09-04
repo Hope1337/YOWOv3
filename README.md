@@ -179,7 +179,7 @@ Let:
 - $D$: the number of frames (default = 16)
 - $H$, $W$: the height and width of the image
 - $N$: the number of truth boxes
-- $num\_class$: the number of classes
+- $num\\_class$: the number of classes
 
 
 You need to return:
@@ -188,11 +188,12 @@ You need to return:
 
 - **boxes**: a tensor with shape $[N, 4]$, containing the coordinates x_top_left, y_top_left, x_bottom_right, y_bottom_right of the truth boxes.
 - **labels**: 
-    - For **phase = train**, return a tensor with shape $[N, num\_class]$ where num_class is a vector with the ith element being $1$ if class $i$ is present and $0$ otherwise. 
-    - For **phase = test**, return a tensor with shape $[N]$, where i is the class index of the $i$th truth box.
+    - For **phase = train**, return a tensor with shape $[N, num\\_class]$ where num_class is a vector with the $i$ th element being $1$ if class $i$ is present and $0$ otherwise. 
+    - For **phase = test**, return a tensor with shape $[N]$, where $i$ th element is the class index of the $i$ th truth box.
 
 - Additionally, to use detect.py, the get_item function also needs an additional parameter get_origin_image. If this parameter is set to True, it should return the original unaltered image.
 
+Please note that index class start at $0$.
 
 To evaluate, use ```ucf_eval.py```.
 
