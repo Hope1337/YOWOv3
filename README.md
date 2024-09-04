@@ -123,7 +123,7 @@ There are some notes about the config file:
 - If you want to train from scratch, set **pretrain_path = null**. Otherwise, if you want to use pretrain model, please set **pretrain_path** to the path of the checkpoint file.
 - Because the project is developed over time, some options that were not present in the past might be added later, such as **image_size**. Some config files in old checkpoint folder may lack these options and cause errors. You just need to add the missing options. I have prepared two sample config files (with all options) in the config folder of this project. Please refer to them for corrections.
 - All options used must remain consistent during both training and testing. For example, if the **image_size** option is set to **224** during training, changing it to **512** during inference will severely impact performance. Similarly, if you set **backbone3D = i3d** during training but infer using **resnext101**, the model will still run but with warnings and, of course, the detection results will be incorrect.
-- Config file được tự động load lên qua hàm ```build_config``` trong ```utils/build_config.py```: 
+- The config file is automatically loaded through the ```build_config``` function in ```utils/build_config.py```.
 
 ```python
 import yaml
