@@ -100,7 +100,7 @@ Or the shorthand version:
 python main.py -m [mode] -cf [config_file_path]
 ```
 
-For ```[mode] = {train, eval, detect, live}``` for training, evaluation, detection (visualization on the current dataset), or live (camera usage) respectively. The```[config_file_path]``` is the path to the config file.
+For ```[mode] = {train, eval, detect, live, onnx}``` for training, evaluation, detection (visualization on the current dataset), live (camera usage) or export to onnx and inference respectively. The```[config_file_path]``` is the path to the config file.
 
 Example of training a model on UCF101-24:
 ```powershell
