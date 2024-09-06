@@ -136,6 +136,7 @@ class YOWOv3(torch.nn.Module):
             print("Please ensure that this is your intention.")
             print("########################################################################")
             print()
+            self.detection_head.initialize_biases()
     
     def init_conv2d(self):
         """
