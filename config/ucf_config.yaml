@@ -95,7 +95,7 @@ config_path       : config/ucf_config.yaml
 dataset           : ucf
 loss              : tal
 active_checker    : True
-num_classes       : 224
+num_classes       : 24
 backbone2D        : yolov8
 backbone3D        : i3d
 fusion_module     : CFAM
