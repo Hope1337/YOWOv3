@@ -108,8 +108,11 @@ class UCF_dataset(data.Dataset):
         
         
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv() 
     
-    root_path = "/home/manh/Datasets/UCF101-24/ucf242"
+    root_path = os.getenv("YOWO_UCF_ROOT_PATH")
     split_path = "trainlist.txt"
     data_path = "rgb-images"
     ann_path = "labels"
