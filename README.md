@@ -186,7 +186,7 @@ You need to return:
 
 - **clip**: a tensor with shape $[C, D, H, W]$ representing the clip to be detected.
 
-- **boxes**: a tensor with shape $[N, 4]$, containing the coordinates x_top_left, y_top_left, x_bottom_right, y_bottom_right of the truth boxes.
+- **boxes**: a tensor with shape $[N, 4]$, containing the coordinates x_top_left, y_top_left, x_bottom_right, y_bottom_right of the truth boxes (normalized in range $0 ... 1$).
 - **labels**: 
     - For **phase = train**, return a tensor with shape $[N, num\\_class]$ where num_class is a vector with the $i$ th element being $1$ if class $i$ is present and $0$ otherwise. 
     - For **phase = test**, return a tensor with shape $[N]$, where $i$ th element is the class index of the $i$ th truth box.
