@@ -46,10 +46,14 @@ class DecoupleHead(torch.nn.Module):
         return out
 
 class YOWOv3(torch.nn.Module):
-    def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path=None):
+    def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path=None,
+                 freeze_bb2D=False, freeze_bb3D=False):
         super().__init__()
         assert mode in ['coupled', 'decoupled']
         self.mode = mode
+
+        self.freeze_bb2D = freeze_bb2D
+        self.freeze_bb3D = freeze_bb3D
 
         self.inter_channels_decoupled = interchannels[0] 
         self.inter_channels_fusion    = interchannels[1]
@@ -95,6 +99,16 @@ class YOWOv3(torch.nn.Module):
             self.net3D.load_pretrain()
             self.init_conv2d()
             self.detection_head.initialize_biases()
+        
+        if freeze_bb2D == True:
+            for param in self.net2D.parameters():
+                param.require_grad = False
+            print("backbone2D freezed!")
+        
+        if freeze_bb3D == True:
+            for param in self.net3D.parameters():
+                param.require_grad = False
+            print("backbone3D freezed!")
 
     def forward(self, clips):
         key_frames = clips[:, :, -1, :, :]
@@ -177,4 +191,12 @@ def build_yowov3(config):
     pretrain_path = config['pretrain_path']
     img_size      = config['img_size']
 
-    return YOWOv3(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path)
+    try:
+        freeze_bb2D   = config['freeze_bb2D']
+        freeze_bb3D   = config['freeze_bb3D']
+    except:
+        freeze_bb2D = False
+        freeze_bb3D = False
+
+    return YOWOv3(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path,
+                  freeze_bb2D, freeze_bb3D)
