@@ -53,7 +53,7 @@ def detect(config):
         flag = 1 
         if flag:
             cv2.imshow('img', origin_image)
-            k = cv2.waitKey(1)
+            k = cv2.waitKey(100)
             if k == ord('q'):
                 return
         else:

@@ -16,7 +16,7 @@ if __name__ == "__main__":
         train.train_model(config=config)
 
     elif args.mode == 'eval':
-        if config['dataset'] == 'ucf' or config['dataset'] == 'jhmdb':
+        if config['dataset'] == 'ucf' or config['dataset'] == 'jhmdb' or config['dataset'] == 'ucfcrime':
             ucf_eval.eval(config=config)
         elif config['dataset'] == 'ava':
             ava_eval.eval(config=config)
