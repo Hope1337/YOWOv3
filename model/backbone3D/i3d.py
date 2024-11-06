@@ -328,10 +328,11 @@ class InceptionI3d(nn.Module):
         return self.avg_pool(x)
 
     def load_pretrain(self):
-        
+        if self.pretrain_path is None:
+            return 
         state_dict = self.state_dict()
 
-        pretrain_state_dict = torch.load(self.pretrain_path)
+        pretrain_state_dict = torch.load(self.pretrain_path, weights_only=True)
         for param_name, value in pretrain_state_dict.items():
             if param_name not in state_dict:
                 continue

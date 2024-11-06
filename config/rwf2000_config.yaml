@@ -1,6 +1,6 @@
 BACKBONE2D:
   YOLOv8:
-    ver : x
+    ver : m
 
     PRETRAIN:
       n : weights/backbone2D/YOLOv8/v8_n.pth
@@ -73,8 +73,8 @@ LOSS:
     radius : 2.5
     soft_label : False
 
-    scale_cls_loss : 0.5
-    scale_box_loss : 7.5
+    scale_cls_loss : 1.5
+    scale_box_loss : 5.0
     scale_dfl_loss : 1.5
 
   SIMOTA:
@@ -82,7 +82,7 @@ LOSS:
     gamma  : 0.5
     radius : 2.5
     mode   : balance
-    soft_label : True
+    soft_label : False
 
     dynamic_k     : False
     dynamic_top_k : 40
@@ -91,55 +91,30 @@ LOSS:
     scale_box_loss : 7.5
     scale_dfl_loss : 1.5
 
-config_path       : config/ucf_config.yaml
-dataset           : ucf
+config_path       : config/ucfcrime_config.yaml
+dataset           : ucfcrime
 loss              : tal
 active_checker    : True
-num_classes       : 24
+num_classes       : 2
 backbone2D        : yolov8
 backbone3D        : i3d
+freeze_bb2D       : False
+freeze_bb3D       : False
 fusion_module     : CFAM
-mode              : decoupled
+mode              : coupled
 interchannels     : [256, 256, 256]
-pretrain_path     : /home/manh/checkpoint/ucf24/E30/ema_epoch_7.pth
-data_root         : /home/manh/Datasets/UCF101-24/ucf242
+pretrain_path     : null
+data_root         : /home/manh/Datasets/RWF-2000
 img_size          : 224
 clip_length       : 16
-batch_size        : 8
+batch_size        : 32
 num_workers       : 6
-acc_grad          : 16
+acc_grad          : 1
 lr                : 0.0001
 weight_decay      : 0.0005
 max_step_warmup   : 500
-adjustlr_schedule : [1, 2, 3, 4, 5]
-max_epoch         : 7
+adjustlr_schedule : [3, 5, 7]
+max_epoch         : 10
 lr_decay          : 0.5
-save_folder       : weights/model_checkpoint
+save_folder       : weights/model_checkpoint2
 sampling_rate     : 1
-
-
-idx2name:
-  0  : Baseketball
-  1  : BaseketballDunk
-  2  : Biking
-  3  : CliffDiving
-  4  : CricketBowling
-  5  : Diving
-  6  : Fencing
-  7  : FloorGymnastics
-  8  : GolfSwing
-  9  : HorseRiding
-  10 : IceDancing
-  11 : LongJump
-  12 : PoleVault
-  13 : RopeClimbing
-  14 : SalsaSpin
-  15 : SkateBoarding
-  16 : Skiing
-  17 : Skijet  
-  18 : Soccer Juggling
-  19 : Surfing
-  20 : TennisSwing
-  21 : TrampolineJumping
-  22 : VolleyballSpiking
-  23 : WalkingWithDog

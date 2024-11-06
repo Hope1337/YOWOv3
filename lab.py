@@ -99,55 +99,60 @@
 #print('Quá trình tạo hình ảnh từ video đã hoàn tất.')
 
 
-import pickle
+#import pickle
 
-# Đọc dữ liệu từ file .pkl
-with open('/home/manh/Datasets/UCF-Crime/Annotations/Train_annotation.pkl', 'rb') as file:
-    train_data = pickle.load(file)
+## Đọc dữ liệu từ file .pkl
+#with open('/home/manh/Datasets/UCF-Crime/Annotations/Train_annotation.pkl', 'rb') as file:
+    #train_data = pickle.load(file)
 
-with open('/home/manh/Datasets/UCF-Crime/Annotations/Test_annotation.pkl', 'rb') as file:
-    test_data = pickle.load(file)
+#with open('/home/manh/Datasets/UCF-Crime/Annotations/Test_annotation.pkl', 'rb') as file:
+    #test_data = pickle.load(file)
 
-train = train_data.keys()
-test  = test_data.keys()
+#train = train_data.keys()
+#test  = test_data.keys()
 
-common_keys = set(train) & set(test)
+#common_keys = set(train) & set(test)
 
-#for x in train_data:
-    #print(train_data[x])
-    #break
+##for x in train_data:
+    ##print(train_data[x])
+    ##break
 
-data = {**train_data, **test_data}
+#data = {**train_data, **test_data}
 
-train1 = {}
-test1  = {}
+#train1 = {}
+#test1  = {}
 
-for x in data:
-    train1[x]  = []
-    test1[x]   = []
+#for x in data:
+    #train1[x]  = []
+    #test1[x]   = []
 
-    num = len(data[x])
-    sorted_data = sorted(data[x], key=lambda x: x[0])
+    #num = len(data[x])
+    #sorted_data = sorted(data[x], key=lambda x: x[0])
     
-    train_len = int(0.7 * num)
+    #train_len = int(0.7 * num)
 
-    for i in range(0, train_len):
-        train1[x].append(sorted_data[i])
+    #for i in range(0, train_len):
+        #train1[x].append(sorted_data[i])
     
-    for i in range(train_len, num):
-        test1[x].append(sorted_data[i])
+    #for i in range(train_len, num):
+        #test1[x].append(sorted_data[i])
 
-with open('/home/manh/Datasets/UCF-Crime/Annotations/Train2_annotation.pkl', 'wb') as file:
-    pickle.dump(train1, file)
+#with open('/home/manh/Datasets/UCF-Crime/Annotations/Train2_annotation.pkl', 'wb') as file:
+    #pickle.dump(train1, file)
 
 
-with open('/home/manh/Datasets/UCF-Crime/Annotations/Test2_annotation.pkl', 'wb') as file:
-    pickle.dump(test1, file)
+#with open('/home/manh/Datasets/UCF-Crime/Annotations/Test2_annotation.pkl', 'wb') as file:
+    #pickle.dump(test1, file)
 
-#print(train1)
+##print(train1)
 
-# Đọc dữ liệu từ file .pkl
-with open('/home/manh/Datasets/UCF-Crime/Annotations/Train2_annotation.pkl', 'rb') as file:
-    train_data = pickle.load(file)
+## Đọc dữ liệu từ file .pkl
+#with open('/home/manh/Datasets/UCF-Crime/Annotations/Train2_annotation.pkl', 'rb') as file:
+    #train_data = pickle.load(file)
 
-print(train_data)
+#print(train_data)
+
+import os 
+
+t = os.environ['LOCAL_RANK']
+print(t)
