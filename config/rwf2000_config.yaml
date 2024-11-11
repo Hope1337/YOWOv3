@@ -91,8 +91,9 @@ LOSS:
     scale_box_loss : 7.5
     scale_dfl_loss : 1.5
 
-config_path       : config/ucfcrime_config.yaml
-dataset           : ucfcrime
+config_path       : config/rwf2000_config.yaml
+video_path        : video.mp4
+dataset           : rwf2000
 loss              : tal
 active_checker    : True
 num_classes       : 2
@@ -103,9 +104,9 @@ freeze_bb3D       : False
 fusion_module     : CFAM
 mode              : coupled
 interchannels     : [256, 256, 256]
-pretrain_path     : null
+pretrain_path     : weights/ema_epoch_3.pth
 data_root         : /home/manh/Datasets/RWF-2000
-img_size          : 224
+img_size          : 512
 clip_length       : 16
 batch_size        : 32
 num_workers       : 6
