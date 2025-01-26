@@ -1,0 +1,370 @@
+BACKBONE2D:
+  YOLOv8:
+    ver : m
+
+    PRETRAIN:
+      n : weights/backbone2D/YOLOv8/v8_n.pth
+      s : weights/backbone2D/YOLOv8/v8_s.pth
+      m : weights/backbone2D/YOLOv8/v8_m.pth
+      l : weights/backbone2D/YOLOv8/v8_l.pth
+      x : weights/backbone2D/YOLOv8/v8_x.pth
+
+BACKBONE3D:
+
+  MOBILENET:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.5x  : weights/backbone3D/mobilenet/kinetics_mobilenet_0.5x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/mobilenet/kinetics_mobilenet_1.0x_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/mobilenet/kinetics_mobilenet_1.5x_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/mobilenet/kinetics_mobilenet_2.0x_RGB_16_best.pth
+
+  MOBILENETv2:
+    width_mult: 1.0
+
+    PRETRAIN:
+      width_mult_0.2x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.2x_RGB_16_best.pth
+      width_mult_0.45x : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.45x_RGB_16_best.pth
+      width_mult_0.7x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.7x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_1.0x_RGB_16_best.pth
+
+  SHUFFLENET:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.5x  : weights/backbone3D/shufflenet/kinetics_shufflenet_0.5x_G3_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/shufflenet/kinetics_shufflenet_1.0x_G3_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/shufflenet/kinetics_shufflenet_1.5x_G3_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/shufflenet/kinetics_shufflenet_2.0x_G3_RGB_16_best.pth
+
+  SHUFFLENETv2:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.25x : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_0.25x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_1.0x_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_1.5x_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_2.0x_RGB_16_best.pth
+      
+  I3D:
+    PRETRAIN:
+      default: weights/backbone3D/I3D/rgb_imagenet.pth
+  
+  RESNET:
+    ver : 101
+
+    PRETRAIN:
+      ver_18 : weights/backbone3D/resnet/kinetics_resnet_18_RGB_16_best.pth
+      ver_50 : weights/backbone3D/resnet/kinetics_resnet_50_RGB_16_best.pth
+      ver_101: weights/backbone3D/resnet/kinetics_resnet_101_RGB_16_best.pth
+
+  RESNEXT:
+    ver : 101
+
+    PRETRAIN:
+      ver_101 : weights/backbone3D/resnext/resnext-101-kinetics.pth
+
+LOSS:
+  TAL:
+    top_k  : 10
+    alpha  : 0.5
+    beta   : 6.0
+    radius : 2.5
+    soft_label : False
+
+    scale_cls_loss : 0.5
+    scale_box_loss : 7.5
+    scale_dfl_loss : 1.5
+
+  SIMOTA:
+    top_k  : 10
+    gamma  : 0.5
+    radius : 2.5
+    mode   : unbalance
+    soft_label : True
+
+    dynamic_k     : False 
+    dynamic_top_k : 10
+
+    scale_cls_loss : 0.5
+    scale_box_loss : 5.0
+    scale_dfl_loss : 0.5
+
+config_path       : config/ava_config.yaml
+dataset           : ava
+loss              : simota  
+active_checker    : True
+num_classes       : 80
+backbone2D        : yolov8
+backbone3D        : resnet
+fusion_module     : CFAM
+mode              : decoupled
+interchannels     : [256, 256, 256]
+pretrain_path     : /home/manh/Projects/Project_VU/weights/model_checkpoint/test_ava_resnet/ema_epoch_9.pth
+data_root         : /home/manh/Datasets/AVA/AVA_Dataset
+img_size          : 224
+clip_length       : 16
+batch_size        : 8
+num_workers       : 6
+acc_grad          : 16
+lr                : 0.0001
+weight_decay      : 0.0005
+max_step_warmup   : 500
+adjustlr_schedule : [3, 4, 5, 6]
+max_epoch         : 9
+lr_decay          : 0.5
+save_folder       : weights/model_checkpoint
+sampling_rate     : 1
+labelmap          : evaluator/Evaluation/ava_action_list_v2.2_for_activitynet_2019.pbtxt
+groundtruth       : evaluator/Evaluation/ava_val_v2.2.csv
+detections        : ava_result/ava_predicted_file.csv
+
+
+idx2name:
+  0 : bend/bow (at the waist)
+  1 : crawl
+  2 : crouch/kneel
+  3 : dance
+  4 : fall down
+  5 : get up
+  6 : jump/leap
+  7 : lie/sleep
+  8 : martial art
+  9 : run/jog
+  10 : sit
+  11 : stand
+  12 : swim
+  13 : walk
+  14 : answer phone
+  15 : brush teeth
+  16 : carry/hold (an object)
+  17 : catch (an object)
+  18 : chop
+  19 : climb (e.g., a mountain)
+  20 : clink glass
+  21 : close (e.g., a door, a box)
+  22 : cook
+  23 : cut
+  24 : dig
+  25 : dress/put on clothing
+  26 : drink
+  27 : drive (e.g., a car, a truck)
+  28 : eat
+  29 : enter
+  30 : exit
+  31 : extract
+  32 : fishing
+  33 : hit (an object)
+  34 : kick (an object)
+  35 : lift/pick up
+  36 : listen (e.g., to music)
+  37 : open (e.g., a window, a car door)
+  38 : paint
+  39 : play board game
+  40 : play musical instrument
+  41 : play with pets
+  42 : point to (an object)
+  43 : press
+  44 : pull (an object)
+  45 : push (an object)
+  46 : put down
+  47 : read
+  48 : ride (e.g., a bike, a car, a horse)
+  49 : row boat
+  50 : sail boat
+  51 : shoot
+  52 : shovel
+  53 : smoke
+  54 : stir
+  55 : take a photo
+  56 : text on/look at a cellphone
+  57 : throw
+  58 : touch (an object)
+  59 : turn (e.g., a screwdriver)
+  60 : watch (e.g., TV)
+  61 : work on a computer
+  62 : write
+  63 : fight/hit (a person)
+  64 : give/serve (an object) to (a person)
+  65 : grab (a person)
+  66 : hand clap
+  67 : hand shake
+  68 : hand wave
+  69 : hug (a person)
+  70 : kick (a person)
+  71 : kiss (a person)
+  72 : lift (a person)
+  73 : listen to (a person)
+  74 : play with kids
+  75 : push (another person)
+  76 : sing to (e.g., self, a person, a group)
+  77 : take (an object) from (a person)
+  78 : talk to (e.g., self, a person, a group)
+  79 : watch (a person)
+
+
+train_class_count:
+  0  : 8322
+  1  : 157
+  2  : 2309
+  3  : 3239
+  4  : 291
+  5  : 1120
+  6  : 245
+  7  : 5349
+  8  : 2102
+  9  : 3308
+  10 : 99884
+  11 : 165387
+  12 : 110
+  13 : 40341
+  14 : 3275
+  15 : 20
+  16 : 80025
+  17 : 80
+  18 : 36
+  19 : 267
+  20 : 53
+  21 : 784
+  22 : 65
+  23 : 184 
+  24 : 41
+  25 : 342
+  26 : 2319
+  27 : 1187
+  28 : 3012
+  29 : 221
+  30 : 53
+  31 : 7
+  32 : 79
+  33 : 177
+  34 : 35
+  35 : 518
+  36 : 660
+  37 : 1247
+  38 : 67
+  39 : 117
+  40 : 1290
+  41 : 138
+  42 : 97
+  43 : 94
+  44 : 341
+  45 : 385
+  46 : 533
+  47 : 2141
+  48 : 4784
+  49 : 62
+  50 : 712
+  51 : 219
+  52 : 67
+  53 : 2986
+  54 : 59
+  55 : 180
+  56 : 415
+  57 : 248
+  58 : 17077
+  59 : 135
+  60 : 1983
+  61 : 176
+  62 : 773
+  63 : 2691
+  64 : 1073
+  65 : 1993
+  66 : 1175
+  67 : 619
+  68 : 343
+  69 : 1101
+  70 : 50
+  71 : 714
+  72 : 400
+  73 : 106175
+  74 : 127
+  75 : 355
+  76 : 1638
+  77 : 608
+  78 : 110151
+  79 : 167115
+
+
+class_ratio:
+  79: 0.5059319458527529
+  11: 0.5005430972490094
+  78: 0.3317767554377424
+  73: 0.32139321745252786
+  10: 0.3018567607333167
+  16: 0.24206491290886498
+  13: 0.12267378359756043
+  58: 0.05155061034502472
+  0: 0.02512088050957867
+  7: 0.016115395377806128
+  48: 0.014466546112115732
+  9: 0.010040529196366514
+  14: 0.00986601595291753
+  3: 0.00982990976461774
+  28: 0.009101768300571982
+  53: 0.008999467433722578
+  63: 0.008108848122327766
+  26: 0.007025662473334075
+  2: 0.006983538586984321
+  47: 0.006456990007612388
+  8: 0.006369733385887896
+  65: 0.006026724597039895
+  60: 0.0059966361067900695
+  76: 0.004943538948046204
+  40: 0.003902477185402268
+  37: 0.0037640701302530744
+  27: 0.0035745126416791783
+  66: 0.003571503792654196
+  5: 0.0033819463040803003
+  69: 0.0033187604745556682
+  64: 0.003228495003806194
+  21: 0.0023649553336362243
+  62: 0.002337875692411382
+  50: 0.0021633624489623983
+  71: 0.002148318203837486
+  36: 0.0020099111486882922
+  67: 0.001862477546464151
+  77: 0.0018293802071893438
+  46: 0.0016037165303156584
+  35: 0.0015615926439659037
+  56: 0.0012486723453677265
+  72: 0.0012035396099929893
+  45: 0.0011644245726682172
+  75: 0.0010681414038687781
+  68: 0.001056106007768848
+  44: 0.001035044064593971
+  25: 0.001029026366544006
+  4: 0.0008755750662698998
+  19: 0.0008063715386953028
+  57: 0.0007492034072206358
+  6: 0.000737168011120706
+  29: 0.0006769910306210565
+  51: 0.0006679644835461091
+  23: 0.0005536282205967751
+  55: 0.0005446016735218277
+  33: 0.0005325662774218978
+  61: 0.0005295574283969153
+  1: 0.0004723892969222483
+  41: 0.0004152211654475813
+  59: 0.00041221231642259886
+  74: 0.00038212382617277413
+  39: 0.00035504418494793186
+  12: 0.00033398224177305457
+  42: 0.00029185835542329993
+  43: 0.0002828318083483525
+  17: 0.00024070792199859788
+  32: 0.0002376990729736154
+  38: 0.0002015928846738257
+  52: 0.0002015928846738257
+  22: 0.00019557518662386078
+  49: 0.00018654863954891334
+  54: 0.00018053094149894842
+  20: 0.0001594689983240711
+  30: 0.0001594689983240711
+  70: 0.00015044245124912366
+  24: 0.00012336281002428142
+  18: 0.00010831856489936904
+  34: 0.00010530971587438658
+  15: 6.017698049964947e-05
+  31: 2.1061943174877314e-05

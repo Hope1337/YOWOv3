@@ -1,0 +1,121 @@
+BACKBONE2D:
+  YOLOv8:
+    ver : m
+
+    PRETRAIN:
+      n : weights/backbone2D/YOLOv8/v8_n.pth
+      s : weights/backbone2D/YOLOv8/v8_s.pth
+      m : weights/backbone2D/YOLOv8/v8_m.pth
+      l : weights/backbone2D/YOLOv8/v8_l.pth
+      x : weights/backbone2D/YOLOv8/v8_x.pth
+
+BACKBONE3D:
+
+  MOBILENET:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.5x  : weights/backbone3D/mobilenet/kinetics_mobilenet_0.5x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/mobilenet/kinetics_mobilenet_1.0x_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/mobilenet/kinetics_mobilenet_1.5x_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/mobilenet/kinetics_mobilenet_2.0x_RGB_16_best.pth
+
+  MOBILENETv2:
+    width_mult: 1.0
+
+    PRETRAIN:
+      width_mult_0.2x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.2x_RGB_16_best.pth
+      width_mult_0.45x : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.45x_RGB_16_best.pth
+      width_mult_0.7x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_0.7x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/mobilenetv2/kinetics_mobilenetv2_1.0x_RGB_16_best.pth
+
+  SHUFFLENET:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.5x  : weights/backbone3D/shufflenet/kinetics_shufflenet_0.5x_G3_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/shufflenet/kinetics_shufflenet_1.0x_G3_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/shufflenet/kinetics_shufflenet_1.5x_G3_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/shufflenet/kinetics_shufflenet_2.0x_G3_RGB_16_best.pth
+
+  SHUFFLENETv2:
+    width_mult: 2.0
+
+    PRETRAIN:
+      width_mult_0.25x : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_0.25x_RGB_16_best.pth
+      width_mult_1.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_1.0x_RGB_16_best.pth
+      width_mult_1.5x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_1.5x_RGB_16_best.pth
+      width_mult_2.0x  : weights/backbone3D/shufflenetv2/kinetics_shufflenetv2_2.0x_RGB_16_best.pth
+      
+  I3D:
+    PRETRAIN:
+      default: weights/backbone3D/I3D/rgb_imagenet.pth
+  
+  RESNET:
+    ver : 101
+
+    PRETRAIN:
+      ver_18 : weights/backbone3D/resnet/kinetics_resnet_18_RGB_16_best.pth
+      ver_50 : weights/backbone3D/resnet/kinetics_resnet_50_RGB_16_best.pth
+      ver_101: weights/backbone3D/resnet/kinetics_resnet_101_RGB_16_best.pth
+
+  RESNEXT:
+    ver : 101
+
+    PRETRAIN:
+      ver_101 : weights/backbone3D/resnext/resnext-101-kinetics.pth
+
+LOSS:
+  TAL:
+    top_k  : 10
+    alpha  : 0.5
+    beta   : 6.0
+    radius : 2.5
+    soft_label : False
+
+    scale_cls_loss : 1.5
+    scale_box_loss : 5.0
+    scale_dfl_loss : 1.5
+
+  SIMOTA:
+    top_k  : 10
+    gamma  : 0.5
+    radius : 2.5
+    mode   : balance
+    soft_label : False
+
+    dynamic_k     : False
+    dynamic_top_k : 40
+
+    scale_cls_loss : 0.5
+    scale_box_loss : 7.5
+    scale_dfl_loss : 1.5
+
+config_path       : config/rwf2000_config.yaml
+video_path        : video.mp4
+dataset           : rwf2000
+loss              : tal
+active_checker    : True
+num_classes       : 2
+backbone2D        : yolov8
+backbone3D        : i3d
+freeze_bb2D       : False
+freeze_bb3D       : False
+fusion_module     : CFAM
+mode              : coupled
+interchannels     : [256, 256, 256]
+pretrain_path     : weights/ema_epoch_3.pth
+data_root         : /home/manh/Datasets/RWF-2000
+img_size          : 512
+clip_length       : 16
+batch_size        : 32
+num_workers       : 6
+acc_grad          : 1
+lr                : 0.0001
+weight_decay      : 0.0005
+max_step_warmup   : 500
+adjustlr_schedule : [3, 5, 7]
+max_epoch         : 10
+lr_decay          : 0.5
+save_folder       : weights/model_checkpoint2
+sampling_rate     : 1

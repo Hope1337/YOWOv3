@@ -111,3 +111,5 @@ class CFAMFusion(nn.Module):
                 fts.append([self.box[idx](ft_box), self.cls[idx](ft_cls)])
         
         return fts
+
+

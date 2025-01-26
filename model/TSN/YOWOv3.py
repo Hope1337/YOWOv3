@@ -4,6 +4,7 @@ from model.fusion.CFAM import CFAMFusion
 from model.head.dfl import DFLHead
 from model.backbone3D.build_backbone3D import build_backbone3D
 from model.backbone2D.build_backbone2D import build_backbone2D
+from model.fusion.build_fusion import build_fusion_block
 
 def pad(k, p=None, d=1):
     if d > 1:
@@ -47,7 +48,7 @@ class DecoupleHead(torch.nn.Module):
 
 class YOWOv3(torch.nn.Module):
     def __init__(self, num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path=None,
-                 freeze_bb2D=False, freeze_bb3D=False):
+                 freeze_bb2D=False, freeze_bb3D=False, fusion_block='CFAM'):
         super().__init__()
         assert mode in ['coupled', 'decoupled']
         self.mode = mode
@@ -78,12 +79,12 @@ class YOWOv3(torch.nn.Module):
             # [[box, cls], [box, cls], [box, cls]]
             out_2D = self.decoupled_head(out_2D)
             out_channels_2D = [[x[0].shape[1], x[1].shape[1]] for x in out_2D]    
+            last2dimension1 = [[x[0].shape[-1], x[0].shape[-2]] for x in out_2D]
+            last2dimension2 = [[x[1].shape[-1], x[1].shape[-2]] for x in out_2D]
 
-
-        self.fusion = CFAMFusion(out_channels_2D, 
-                                 out_channels_3D, 
-                                 self.inter_channels_fusion, 
-                                 mode=self.mode)
+        self.fusion = build_fusion_block(out_channels_2D, out_channels_3D, 
+                                         self.inter_channels_fusion, mode, fusion_block, 
+                                         [last2dimension1, last2dimension2])
 
         self.detection_head = DFLHead(num_classes, img_size,
                                       self.inter_channels_detection, 
@@ -126,7 +127,7 @@ class YOWOv3(torch.nn.Module):
     
     def load_pretrain(self, pretrain_yowov3):
         state_dict = self.state_dict()
-        pretrain_state_dict = torch.load(pretrain_yowov3)
+        pretrain_state_dict = torch.load(pretrain_yowov3, weights_only=True)
         flag = 0
         
         for param_name, value in pretrain_state_dict.items():
@@ -190,6 +191,7 @@ def build_yowov3(config):
     mode          = config['mode']
     pretrain_path = config['pretrain_path']
     img_size      = config['img_size']
+    fusion_block  = config['fusion_module']
 
     try:
         freeze_bb2D   = config['freeze_bb2D']
@@ -199,4 +201,4 @@ def build_yowov3(config):
         freeze_bb3D = False
 
     return YOWOv3(num_classes, backbone2D, backbone3D, interchannels, mode, img_size, pretrain_path,
-                  freeze_bb2D, freeze_bb3D)
+                  freeze_bb2D, freeze_bb3D, fusion_block)
