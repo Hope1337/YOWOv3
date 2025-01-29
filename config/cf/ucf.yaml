@@ -109,10 +109,10 @@ active_checker    : True
 num_classes       : 24
 backbone2D        : yolov8
 backbone3D        : i3d
-fusion_module     : MultiHead
+fusion_module     : Simple
 mode              : decoupled
 interchannels     : [256, 256, 256]
-pretrain_path     : weights/fig1/ucf/MultiHead/ema_epoch_7.pth
+pretrain_path     : null
 data_root         : /home/manh/Datasets/ucf24
 img_size          : 224
 clip_length       : 16
@@ -125,7 +125,7 @@ max_step_warmup   : 500
 adjustlr_schedule : [1, 2, 3, 4, 5]
 max_epoch         : 7
 lr_decay          : 0.5
-save_folder       : weights/fig1/ucf/MultiHead
+save_folder       : weights/fig1/ucf/Simple
 sampling_rate     : 1
 
 

@@ -98,7 +98,7 @@ active_checker    : True
 num_classes       : 80
 backbone2D        : yolov8
 backbone3D        : i3d
-fusion_module     : MultiHead
+fusion_module     : LKA
 mode              : decoupled
 interchannels     : [256, 256, 256]
 pretrain_path     : null
@@ -114,7 +114,7 @@ max_step_warmup   : 500
 adjustlr_schedule : [3, 4, 5, 6]
 max_epoch         : 9
 lr_decay          : 0.5
-save_folder       : weights/fig1/ava/MultiHead
+save_folder       : .
 sampling_rate     : 1
 labelmap          : evaluator/Evaluation/ava_action_list_v2.2_for_activitynet_2019.pbtxt
 groundtruth       : evaluator/Evaluation/ava_val_v2.2.csv
