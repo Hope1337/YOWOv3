@@ -48,7 +48,7 @@ Clone this repository
 git clone https://github.com/AakiraOtok/YOWOv3.git
 ```
 
-**Update**: I found that reconstructing env with conda is easier to do, thus I provided an ```environment.yml``` so that you can use ```conda env create -f environment.yml``` to reconstruct the env <3.
+**Update**: I found that reconstructing env with conda is easier to do, thus I provided an ```environment.yml``` file so that you can use ```conda env create -f environment.yml``` to reconstruct the env <3 (without doing the remaining steps below. Btw, I tested it and it worked well on ubuntu but not with window).
 
 Use Python 3.8 or Python 3.9, and then download the dependencies:
 
